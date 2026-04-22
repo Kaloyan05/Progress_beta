@@ -40,7 +40,9 @@ const Icon = ({ name, className = "w-5 h-5", strokeWidth = 2, fill = "none" }) =
     archive: <><rect width="20" height="5" x="2" y="4" rx="2"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9M10 13h4"/></>,
     pause: <><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></>,
     search: <><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></>,
-    lightbulb: <><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.4.3.7.7.9 1.1.2.4.1.9.1 1.2h6c0-.3-.1-.8.1-1.2.2-.4.5-.8.9-1.1A7 7 0 0 0 12 2z"/></>
+    lightbulb: <><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.4.3.7.7.9 1.1.2.4.1.9.1 1.2h6c0-.3-.1-.8.1-1.2.2-.4.5-.8.9-1.1A7 7 0 0 0 12 2z"/></>,
+    star: <><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></>,
+    info: <><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></>
   };
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -56,9 +58,11 @@ const T = {
     dashboard: 'Табло', habits: 'Навици', goals: 'Цели', tasks: 'Задачи', stats: 'Статистика', calendar: 'Календар',
     addHabit: 'Нов навик', addGoal: 'Нова цел', addTask: 'Нова задача',
     todayProgress: 'Днешен прогрес', activeStreak: 'Активна серия', longestStreak: 'Най-дълга серия',
+    streakChampions: 'Streak шампиони', tasksToday: 'Задачи днес', noTasksToday: 'Няма задачи за днес 🎉', bestStreak: 'Най-дълга',
+    openTasksLabel: 'Отворени задачи',
     completedToday: 'Днес', days: 'дни', day: 'ден', done: 'Готово', ofTotal: 'от',
     progress: 'Прогрес', deadline: 'Краен срок', subtasks: 'Подзадачи', addSubtask: 'Добави подзадача',
-    name: 'Име', category: 'Категория', target: 'Цел (дни серия)',
+    name: 'Име', category: 'Категория', target: 'Цел (дни серия)', targetOptional: 'Цел (дни серия) — опционално', noTarget: 'Без цел', noDeadline: 'Без дата',
     save: 'Запази', cancel: 'Отказ', delete: 'Изтрий', confirm: 'Потвърди',
     noHabits: 'Все още няма навици. Добави първия си!', noGoals: 'Няма цели. Започни сега!', noTasks: 'Няма задачи. Добави първата!',
     searchPlaceholder: 'Търси…', noMatches: 'Няма съвпадения',
@@ -82,6 +86,8 @@ const T = {
     sizeSmall: 'Малък', sizeMedium: 'Среден', sizeLarge: 'Голям',
     eveningReminder: 'Вечерно напомняне', eveningReminderDesc: 'Дневен обзор — колко навика остават',
     freezeDays: 'Дни за пауза (freeze)', freezeDaysDesc: 'Серията не се губи при пропуски до този брой дни',
+    backfillDays: 'Бек-фил (минали дни)', backfillDaysDesc: 'До колко дни назад можеш да отметнеш пропуснат навик', backfillOff: 'Изключен',
+    backfillHint: 'Можеш да отметнеш този ден със задна дата.', backfillLocked: 'Извън прозореца за бек-фил — само преглед.',
     autoArchive: 'Авто-архив на задачи', autoArchiveDesc: 'Изпълнените задачи се скриват след N дни',
     archiveDays: 'Дни до архивиране', showArchived: 'Покажи архивирани',
     quickIncrement: 'Бърз +1 на таблото', quickIncrementDesc: 'Бутон +1 за числови цели от таблото',
@@ -92,8 +98,30 @@ const T = {
     confirmDeleteSubtask: 'Подзадачата ще бъде изтрита.',
     confirmImportTitle: 'Презапиши всички данни?', confirmImportBody: 'Текущите навици, цели и задачи ще бъдат заменени с тези от файла.',
     yesDelete: 'Да, изтрий', yesOverwrite: 'Да, презапиши',
-    frozen: 'Пауза', freezeToday: 'Ден за пауза', streakProtected: 'Серията е защитена', daysFrozen: 'дни пауза',
+    frozen: 'Пауза', freezeToday: 'Ден за пауза', streakProtected: 'Серия защитена', daysFrozen: 'дни пауза',
+    freezeUsed: 'пропуск използван', freezeUsedPlural: 'пропуска използвани', freezeOf: 'от',
     archived: 'Архивирано', hidden: 'скрити',
+    archiveAction: 'Архивирай', yesArchive: 'Да, архивирай',
+    confirmArchiveGoalTitle: 'Архивирай целта?', confirmArchiveGoalBody: 'Целта ще бъде скрита от активния списък. Можеш да я възстановиш по всяко време от архива.',
+    retireHabit: 'Пенсионирай навика', completeAndArchiveGoal: 'Завърши и архивирай',
+    restoreItem: 'Възстанови', archivedHabits: 'Архивирани навици', archivedGoals: 'Архивирани цели',
+    archivedOn: 'Архивирано на', showArchivedItems: 'Покажи архивирани', hideArchivedItems: 'Скрий архивирани',
+    habitRetired: 'Навикът е пенсиониран', goalCompleted: 'Целта е завършена',
+    habitRestored: 'Навикът е възстановен', goalRestored: 'Целта е възстановена',
+    noArchivedHabits: 'Няма архивирани навици', noArchivedGoals: 'Няма архивирани цели',
+    important: 'Важен', importantHabit: 'Важен навик', markImportant: 'Отбележи като важен', unmarkImportant: 'Премахни важност',
+    welcomeTitle: 'Добре дошъл в ПРОГРЕС',
+    welcomeBody: 'Проследявай навиците, целите и задачите си на едно място. Започни, като добавиш нещо свое или зареди пример, за да видиш как изглежда.',
+    welcomeAddHabit: 'Добави първия си навик',
+    welcomeAddGoal: 'Добави цел',
+    welcomeAddTask: 'Добави задача',
+    seeExample: 'Виж пример',
+    skipWelcome: 'Пропусни за сега',
+    loadSampleData: 'Добави примерни данни',
+    sampleDataDesc: '3 навика, 1 цел и 2 задачи — за демонстрация',
+    confirmSampleTitle: 'Добави примерни данни?',
+    confirmSampleBody: 'Примерните навици, цел и задачи ще бъдат добавени към съществуващите.',
+    yesAdd: 'Да, добави',
     monthNames: ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'],
     categories: { health: 'Здраве', work: 'Работа', learning: 'Учене', personal: 'Лично', finance: 'Финанси' },
     quotes: [
@@ -117,9 +145,11 @@ const T = {
     dashboard: 'Dashboard', habits: 'Habits', goals: 'Goals', tasks: 'Tasks', stats: 'Stats', calendar: 'Calendar',
     addHabit: 'New habit', addGoal: 'New goal', addTask: 'New task',
     todayProgress: "Today's progress", activeStreak: 'Active streak', longestStreak: 'Longest streak',
+    streakChampions: 'Streak Champions', tasksToday: "Today's Tasks", noTasksToday: 'No tasks today 🎉', bestStreak: 'Longest',
+    openTasksLabel: 'Open tasks',
     completedToday: 'Today', days: 'days', day: 'day', done: 'Done', ofTotal: 'of',
     progress: 'Progress', deadline: 'Deadline', subtasks: 'Subtasks', addSubtask: 'Add subtask',
-    name: 'Name', category: 'Category', target: 'Target (streak days)',
+    name: 'Name', category: 'Category', target: 'Target (streak days)', targetOptional: 'Target (streak days) — optional', noTarget: 'No target', noDeadline: 'No date',
     save: 'Save', cancel: 'Cancel', delete: 'Delete', confirm: 'Confirm',
     noHabits: 'No habits yet. Add your first!', noGoals: 'No goals yet. Start now!', noTasks: 'No tasks yet. Add your first!',
     searchPlaceholder: 'Search…', noMatches: 'No matches',
@@ -142,6 +172,8 @@ const T = {
     sizeSmall: 'Small', sizeMedium: 'Medium', sizeLarge: 'Large',
     eveningReminder: 'Evening reminder', eveningReminderDesc: 'Daily digest — how many habits remain',
     freezeDays: 'Freeze days', freezeDaysDesc: "Streak isn't lost if you miss up to this many days",
+    backfillDays: 'Backfill (past days)', backfillDaysDesc: 'How many days back you can mark a missed habit', backfillOff: 'Off',
+    backfillHint: 'You can mark this day retroactively.', backfillLocked: 'Outside the backfill window — view only.',
     autoArchive: 'Auto-archive tasks', autoArchiveDesc: 'Completed tasks hide after N days',
     archiveDays: 'Days to archive', showArchived: 'Show archived',
     quickIncrement: 'Quick +1 on dashboard', quickIncrementDesc: '+1 button for numeric goals on dashboard',
@@ -153,7 +185,29 @@ const T = {
     confirmImportTitle: 'Overwrite all data?', confirmImportBody: 'Current habits, goals and tasks will be replaced with the ones in the file.',
     yesDelete: 'Yes, delete', yesOverwrite: 'Yes, overwrite',
     frozen: 'Frozen', freezeToday: 'Freeze day', streakProtected: 'Streak protected', daysFrozen: 'days frozen',
+    freezeUsed: 'miss used', freezeUsedPlural: 'misses used', freezeOf: 'of',
     archived: 'Archived', hidden: 'hidden',
+    archiveAction: 'Archive', yesArchive: 'Yes, archive',
+    confirmArchiveGoalTitle: 'Archive goal?', confirmArchiveGoalBody: 'The goal will be hidden from the active list. You can restore it at any time from the archive.',
+    retireHabit: 'Retire habit', completeAndArchiveGoal: 'Complete & archive',
+    restoreItem: 'Restore', archivedHabits: 'Archived habits', archivedGoals: 'Archived goals',
+    archivedOn: 'Archived on', showArchivedItems: 'Show archived', hideArchivedItems: 'Hide archived',
+    habitRetired: 'Habit retired', goalCompleted: 'Goal completed',
+    habitRestored: 'Habit restored', goalRestored: 'Goal restored',
+    noArchivedHabits: 'No archived habits', noArchivedGoals: 'No archived goals',
+    important: 'Important', importantHabit: 'Important habit', markImportant: 'Mark as important', unmarkImportant: 'Unmark important',
+    welcomeTitle: 'Welcome to PROGRESS',
+    welcomeBody: 'Track your habits, goals, and tasks in one place. To get started, add something of your own — or load the sample data to see how a filled-in tracker looks.',
+    welcomeAddHabit: 'Add your first habit',
+    welcomeAddGoal: 'Add a goal',
+    welcomeAddTask: 'Add a task',
+    seeExample: 'See example',
+    skipWelcome: 'Skip for now',
+    loadSampleData: 'Load sample data',
+    sampleDataDesc: '3 habits, 1 goal, and 2 tasks for demonstration',
+    confirmSampleTitle: 'Load sample data?',
+    confirmSampleBody: 'Sample habits, a goal, and tasks will be added to your existing data.',
+    yesAdd: 'Yes, add',
     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     categories: { health: 'Health', work: 'Work', learning: 'Learning', personal: 'Personal', finance: 'Finance' },
     quotes: [
@@ -176,6 +230,7 @@ const T = {
 
 const STORAGE_KEY = 'progress-tracker-v2';
 const SETTINGS_KEY = 'progress-settings-v1';
+const ONBOARDING_KEY = 'progress-onboarding-v1';
 const SCHEMA_VERSION = 2;
 
 // ===== Safe storage with quota handling + debounced writes =====
@@ -219,7 +274,7 @@ function migrateData(raw) {
   };
   if (v < 2) {
     out.habits = out.habits.map(h => ({
-      notes: '', reminderTime: '', target: 21, completions: [], ...h
+      notes: '', reminderTime: '', target: 21, completions: [], important: false, ...h
     }));
     out.goals = out.goals.map(g => ({
       subtasks: [], notes: '', numeric: null, progress: 0, ...g
@@ -228,6 +283,10 @@ function migrateData(raw) {
       notes: '', reminderTime: '', priority: 'medium', completedAt: null, done: false, ...t
     }));
   }
+  // Ensure archived defaults on every load — this is backward-compatible for
+  // pre-v11 stores that simply don't have the field yet (т.2.6).
+  out.habits = out.habits.map(h => ({ archived: false, archivedAt: null, ...h }));
+  out.goals  = out.goals.map(g  => ({ archived: false, archivedAt: null, ...g  }));
   return out;
 }
 
@@ -350,9 +409,11 @@ const DEFAULT_SETTINGS = {
   eveningReminder: false,
   eveningReminderTime: '21:00',
   freezeDays: 1,                // 0 = strict, 1 = allow 1 missed day, etc.
+  backfillDays: 3,              // how many days back a missed habit day can be checked/unchecked
   autoArchive: false,
   archiveDays: 7,
   showArchived: false,
+  showArchivedItems: false,     // т.2.6: toggle archived habits/goals in their views
   quickIncrement: true
 };
 
@@ -405,6 +466,59 @@ const isStreakBroken = (completions, freezeDays = 0) => {
     d.setDate(d.getDate() - 1);
   }
   return false;
+};
+
+// Longest historical streak in the completion log. A "run" continues as long
+// as each gap between consecutive unique completions is <= 1 + freezeDays days
+// (so freezeDays=0 requires strictly consecutive days).
+const calculateLongestStreak = (completions, freezeDays = 0) => {
+  if (!completions?.length) return 0;
+  const days = [...new Set(completions.map(d => {
+    const dt = new Date(d);
+    dt.setHours(0, 0, 0, 0);
+    return dt.getTime();
+  }))].sort((a, b) => a - b);
+  let longest = 1;
+  let current = 1;
+  const maxGap = 1 + (freezeDays || 0);
+  for (let i = 1; i < days.length; i++) {
+    const gap = Math.round((days[i] - days[i - 1]) / 86400000);
+    if (gap <= maxGap) {
+      current++;
+      if (current > longest) longest = current;
+    } else {
+      current = 1;
+    }
+  }
+  return longest;
+};
+
+// How many freeze days are currently "consumed" inside the active streak tail.
+// Counts missed days that are bracketed by completions (i.e. misses the freeze is
+// actively protecting). Matches calculateStreak: if today is missing we start from
+// yesterday so today's miss itself is not counted. Returns 0 when freezeDays=0 or
+// no miss inside the running streak — i.e. no "active pause".
+const calculateFreezeUsed = (completions, freezeDays = 0) => {
+  if (!completions?.length || freezeDays <= 0) return 0;
+  const set = new Set(completions);
+  let d = new Date();
+  if (!set.has(d.toDateString())) d.setDate(d.getDate() - 1);
+  let used = 0;
+  let pendingMisses = 0;   // misses since the last completion — only confirmed when we hit another completion
+  let missed = 0;          // consecutive misses (break condition, mirrors calculateStreak)
+  for (let i = 0; i < 3650; i++) {
+    if (set.has(d.toDateString())) {
+      used += pendingMisses;
+      pendingMisses = 0;
+      missed = 0;
+    } else {
+      missed++;
+      pendingMisses++;
+      if (missed > freezeDays) break;
+    }
+    d.setDate(d.getDate() - 1);
+  }
+  return used;
 };
 
 const isTaskArchivable = (task, archiveDays) => {
@@ -641,6 +755,92 @@ function UndoToast({ label, onUndo, onDismiss, lang }) {
   );
 }
 
+// ============ QUICK-ADD FAB ============
+// Floating action button bottom-right. Tap opens a mini-menu with habit/goal/task.
+// Selecting a type calls onSelect(type) and the parent opens the AddModal.
+function QuickAddFAB({ t, onSelect }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); } };
+    const onDown = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown, { passive: true });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown);
+    };
+  }, [open]);
+
+  const pick = (type) => {
+    setOpen(false);
+    vibrate(10);
+    onSelect(type);
+  };
+
+  // Ordered bottom-up (last in array is closest to FAB)
+  const items = [
+    { type: 'task',  icon: 'checkCircle', label: t.addTask,  grad: 'linear-gradient(135deg, #10b981, #059669)' },
+    { type: 'goal',  icon: 'target',      label: t.addGoal,  grad: 'linear-gradient(135deg, #0ea5e9, #0369a1)' },
+    { type: 'habit', icon: 'flame',       label: t.addHabit, grad: 'linear-gradient(135deg, #f59e0b, #ea580c)' },
+  ];
+
+  const a11yLabel = open
+    ? (t.cancel || 'Close')
+    : `${t.addHabit} / ${t.addGoal} / ${t.addTask}`;
+
+  return (
+    <div
+      ref={wrapRef}
+      className="fixed z-30 right-4 flex flex-col items-end"
+      style={{ bottom: 'calc(5.25rem + env(safe-area-inset-bottom))' }}
+    >
+      {open && (
+        <div className="flex flex-col items-end gap-3 mb-3">
+          {items.map((it, i) => (
+            <button
+              key={it.type}
+              onClick={() => pick(it.type)}
+              className="flex items-center gap-3 active:scale-95 transition-transform"
+              style={{ animation: `fadeIn .2s ease ${i * 45}ms both` }}
+              aria-label={it.label}
+            >
+              <span className="px-3 py-1.5 rounded-lg bg-black/85 text-amber-100 text-xs font-semibold border border-amber-500/25 shadow-lg whitespace-nowrap backdrop-blur">
+                {it.label}
+              </span>
+              <span
+                className="w-12 h-12 rounded-full flex items-center justify-center shadow-xl border border-white/10"
+                style={{ background: it.grad }}
+              >
+                <Icon name={it.icon} className="w-5 h-5 text-white" strokeWidth={2.5} />
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+      <button
+        onClick={() => { vibrate(10); setOpen(o => !o); }}
+        aria-label={a11yLabel}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="w-14 h-14 rounded-full flex items-center justify-center active:scale-95"
+        style={{
+          background: 'linear-gradient(135deg, var(--theme-primary), var(--theme-primary-dark))',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 0 24px var(--theme-glow)',
+          transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
+          transition: 'transform .22s ease'
+        }}
+      >
+        <Icon name="plus" className="w-7 h-7 text-black" strokeWidth={3} />
+      </button>
+    </div>
+  );
+}
+
 // ============ MAIN APP ============
 function App() {
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'bg');
@@ -656,12 +856,14 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [notifPermission, setNotifPermission] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'default');
   const [loaded, setLoaded] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(false);
   const reminderCheckRef = useRef(null);
 
   const t = T[lang];
   useThemeInjector(settings);
 
-  // Load data + settings (with migration)
+  // Load data + settings (with migration). First-time users land on an empty
+  // state so the WelcomeScreen can guide them — no more auto-seeded demo data.
   useEffect(() => {
     const saved = storage.load(STORAGE_KEY, null);
     if (saved && typeof saved === 'object' && (saved.habits || saved.goals || saved.tasks)) {
@@ -672,41 +874,52 @@ function App() {
       if (data.version !== (saved.version || 1)) {
         storage.save(STORAGE_KEY, { ...data });
       }
-    } else {
-      seedDemo();
     }
     const savedSettings = storage.load(SETTINGS_KEY, null);
     if (savedSettings && typeof savedSettings === 'object') {
       setSettings({ ...DEFAULT_SETTINGS, ...savedSettings });
     }
+    const onboarding = storage.load(ONBOARDING_KEY, null);
+    if (onboarding && onboarding.dismissed) setOnboardingDone(true);
     setLoaded(true);
     setQuoteIdx(Math.floor(Math.random() * 10));
   }, []);
 
-  const seedDemo = () => {
+  const dismissOnboarding = useCallback(() => {
+    setOnboardingDone(true);
+    storage.save(ONBOARDING_KEY, { dismissed: true, at: new Date().toISOString() });
+  }, []);
+
+  // Loads a small, opinionated sample set (3 habits, 1 goal, 2 tasks — per PLAN 2.4).
+  // Appends to existing data so it's safe to call from Settings even mid-use.
+  const loadSampleData = useCallback(() => {
     const today = new Date().toDateString();
     const y = new Date(Date.now() - 86400000).toDateString();
     const y2 = new Date(Date.now() - 2 * 86400000).toDateString();
-    setHabits([
-      { id: 1, name: 'Сутрешна разходка', category: 'health', completions: [today, y, y2], target: 30, reminderTime: '08:00', notes: '' },
-      { id: 2, name: 'Четене 30 минути', category: 'learning', completions: [y, y2], target: 60, reminderTime: '', notes: '' },
-      { id: 3, name: 'Медитация', category: 'personal', completions: [today], target: 21, reminderTime: '07:00', notes: '' }
-    ]);
-    setGoals([
-      { id: 1, name: 'Научи испански', category: 'learning', progress: 33, deadline: '2026-12-31', notes: '',
+    const base = Date.now();
+    const isBg = lang === 'bg';
+    const sampleHabits = [
+      { id: base + 1, name: isBg ? 'Сутрешна разходка' : 'Morning walk', category: 'health', completions: [today, y, y2], target: 30, reminderTime: '08:00', notes: '', important: false },
+      { id: base + 2, name: isBg ? 'Четене 30 минути' : 'Read for 30 minutes', category: 'learning', completions: [y, y2], target: 60, reminderTime: '', notes: '', important: false },
+      { id: base + 3, name: isBg ? 'Медитация' : 'Meditation', category: 'personal', completions: [today], target: 21, reminderTime: '07:00', notes: '', important: true }
+    ];
+    const sampleGoals = [
+      { id: base + 11, name: isBg ? 'Научи испански' : 'Learn Spanish', category: 'learning', progress: 33, deadline: '2026-12-31', notes: '',
         subtasks: [
-          { id: 1, text: 'Завърши A1 курс', done: true },
-          { id: 2, text: 'Достигни A2 ниво', done: false },
-          { id: 3, text: 'Първи разговор', done: false }
-        ], numeric: null },
-      { id: 2, name: 'Прочети 24 книги', category: 'learning', progress: 25, deadline: '2026-12-31', subtasks: [], notes: '',
-        numeric: { current: 6, target: 24, unit: 'книги' } }
-    ]);
-    setTasks([
-      { id: 1, name: 'Подай данъчна декларация', category: 'personal', deadline: '2026-04-30', done: false, priority: 'high', reminderTime: '', notes: '', completedAt: null },
-      { id: 2, name: 'Завърши проект отчет', category: 'work', deadline: '2026-04-25', done: false, priority: 'medium', reminderTime: '', notes: '', completedAt: null }
-    ]);
-  };
+          { id: base + 101, text: isBg ? 'Завърши A1 курс' : 'Finish A1 course', done: true },
+          { id: base + 102, text: isBg ? 'Достигни A2 ниво' : 'Reach A2 level', done: false },
+          { id: base + 103, text: isBg ? 'Първи разговор' : 'First conversation', done: false }
+        ], numeric: null }
+    ];
+    const sampleTasks = [
+      { id: base + 21, name: isBg ? 'Подай данъчна декларация' : 'File tax return', category: 'personal', deadline: '2026-04-30', done: false, priority: 'high', reminderTime: '', notes: '', completedAt: null },
+      { id: base + 22, name: isBg ? 'Завърши проект отчет' : 'Finish project report', category: 'work', deadline: '2026-04-25', done: false, priority: 'medium', reminderTime: '', notes: '', completedAt: null }
+    ];
+    setHabits(prev => [...prev, ...sampleHabits]);
+    setGoals(prev => [...prev, ...sampleGoals]);
+    setTasks(prev => [...prev, ...sampleTasks]);
+    dismissOnboarding();
+  }, [lang, dismissOnboarding]);
 
   // Save data — debounced so rapid edits batch into a single write
   useDebouncedEffect(() => {
@@ -744,6 +957,7 @@ function App() {
       const notifKey = `notif-${dateKey(now)}-${currentTime}`;
 
       habits.forEach(h => {
+        if (h.archived) return;
         if (h.reminderTime === currentTime && !h.completions.includes(today)) {
           const key = `${notifKey}-h${h.id}`;
           if (!sessionStorage.getItem(key)) {
@@ -765,7 +979,7 @@ function App() {
 
       // Evening digest
       if (settings.eveningReminder && settings.eveningReminderTime === currentTime) {
-        const remaining = habits.filter(h => !h.completions.includes(today)).length;
+        const remaining = habits.filter(h => !h.archived && !h.completions.includes(today)).length;
         const key = `${notifKey}-evening`;
         if (remaining > 0 && !sessionStorage.getItem(key)) {
           new Notification(t.appName, { body: t.eveningBody(remaining), icon: 'icon-192.png', tag: key });
@@ -796,24 +1010,32 @@ function App() {
     return tasks.filter(ta => isTaskArchivable(ta, settings.archiveDays)).length;
   }, [tasks, settings.autoArchive, settings.archiveDays]);
 
+  // т.2.6 — manual archive for habits and goals. Archived items are hidden
+  // from Dashboard, Calendar, Stats and the active HabitsView/GoalsView lists,
+  // but stay in storage with an archivedAt timestamp and can be restored.
+  const activeHabits = useMemo(() => habits.filter(h => !h.archived), [habits]);
+  const activeGoals  = useMemo(() => goals.filter(g => !g.archived),  [goals]);
+  const archivedHabitCount = useMemo(() => habits.filter(h => h.archived).length, [habits]);
+  const archivedGoalCount  = useMemo(() => goals.filter(g => g.archived).length,  [goals]);
+
   const stats = useMemo(() => {
     const today = new Date().toDateString();
-    const doneToday = habits.filter(h => h.completions.includes(today)).length;
-    const habitRate = habits.length ? Math.round((doneToday / habits.length) * 100) : 0;
-    const streaks = habits.map(h => calculateStreak(h.completions, settings.freezeDays));
+    const doneToday = activeHabits.filter(h => h.completions.includes(today)).length;
+    const habitRate = activeHabits.length ? Math.round((doneToday / activeHabits.length) * 100) : 0;
+    const streaks = activeHabits.map(h => calculateStreak(h.completions, settings.freezeDays));
     const maxStreak = Math.max(0, ...streaks);
     const activeStreak = streaks.filter(s => s > 0).length;
-    const brokenCount = habits.filter(h => isStreakBroken(h.completions, settings.freezeDays)).length;
-    const avgGoal = goals.length ? Math.round(goals.reduce((s, g) => s + g.progress, 0) / goals.length) : 0;
+    const brokenCount = activeHabits.filter(h => isStreakBroken(h.completions, settings.freezeDays)).length;
+    const avgGoal = activeGoals.length ? Math.round(activeGoals.reduce((s, g) => s + g.progress, 0) / activeGoals.length) : 0;
     const openTasks = visibleTasks.filter(ta => !ta.done).length;
     const week = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(Date.now() - i * 86400000);
-      const count = habits.filter(h => h.completions.includes(d.toDateString())).length;
-      week.push({ day: d, count, total: habits.length });
+      const count = activeHabits.filter(h => h.completions.includes(d.toDateString())).length;
+      week.push({ day: d, count, total: activeHabits.length });
     }
     return { doneToday, habitRate, maxStreak, activeStreak, avgGoal, openTasks, week, brokenCount };
-  }, [habits, goals, visibleTasks, settings.freezeDays]);
+  }, [activeHabits, activeGoals, visibleTasks, settings.freezeDays]);
 
   const tick = useCallback(() => {
     if (settings.sound) playTick();
@@ -860,8 +1082,8 @@ function App() {
 
   const addItem = (type, data) => {
     const id = Date.now();
-    if (type === 'habit') setHabits([...habits, { id, completions: [], target: 30, notes: '', reminderTime: '', ...data }]);
-    if (type === 'goal') setGoals([...goals, { id, progress: 0, subtasks: [], notes: '', numeric: null, ...data }]);
+    if (type === 'habit') setHabits([...habits, { id, completions: [], target: null, notes: '', reminderTime: '', important: false, archived: false, archivedAt: null, ...data }]);
+    if (type === 'goal') setGoals([...goals, { id, progress: 0, subtasks: [], notes: '', numeric: null, archived: false, archivedAt: null, ...data }]);
     if (type === 'task') setTasks([...tasks, { id, done: false, priority: 'medium', notes: '', reminderTime: '', completedAt: null, ...data }]);
     setModal(null);
   };
@@ -928,6 +1150,28 @@ function App() {
       }
     });
   };
+  // Swipe-right delete for tasks (т.2.7). Bypasses the confirm modal because
+  // the swipe itself is an explicit intent; the 5s undo toast is the safety net.
+  const deleteTaskSwipe = (id) => {
+    const ta = tasks.find(x => x.id === id);
+    if (!ta) return;
+    const prev = tasks;
+    setTasks(tasks.filter(x => x.id !== id));
+    showUndo(`${t.confirmDeleteTask}: ${ta.name}`, () => setTasks(prev));
+  };
+  // Swipe-right archive for goals (т.2.7) — per PLAN.md, this one DOES ask
+  // for confirmation because archiving a goal with history feels weightier
+  // than deleting a single task.
+  const requestArchiveGoal = (id) => {
+    const g = goals.find(x => x.id === id);
+    if (!g) return;
+    setConfirm({
+      title: t.confirmArchiveGoalTitle,
+      body: `"${g.name}" — ${t.confirmArchiveGoalBody}`,
+      confirmLabel: t.yesArchive,
+      onConfirm: () => archiveGoal(id)
+    });
+  };
   const requestDeleteSubtask = (goalId, subId) => {
     setConfirm({
       title: t.confirmDeleteTitle,
@@ -944,6 +1188,38 @@ function App() {
         showUndo(t.confirmDeleteSubtask, () => setGoals(prev));
       }
     });
+  };
+
+  // === Archive / unarchive for habits and goals (т.2.6) ===
+  // Soft-hide without deletion; completions/subtasks/notes stay intact.
+  // Undo toast gives a 5s window to reverse (matches delete UX).
+  const archiveHabit = (id) => {
+    const h = habits.find(x => x.id === id);
+    if (!h) return;
+    const prev = habits;
+    setHabits(habits.map(x => x.id === id ? { ...x, archived: true, archivedAt: new Date().toISOString() } : x));
+    showUndo(`${t.habitRetired}: ${h.name}`, () => setHabits(prev));
+  };
+  const unarchiveHabit = (id) => {
+    const h = habits.find(x => x.id === id);
+    if (!h) return;
+    const prev = habits;
+    setHabits(habits.map(x => x.id === id ? { ...x, archived: false, archivedAt: null } : x));
+    showUndo(`${t.habitRestored}: ${h.name}`, () => setHabits(prev));
+  };
+  const archiveGoal = (id) => {
+    const g = goals.find(x => x.id === id);
+    if (!g) return;
+    const prev = goals;
+    setGoals(goals.map(x => x.id === id ? { ...x, archived: true, archivedAt: new Date().toISOString() } : x));
+    showUndo(`${t.goalCompleted}: ${g.name}`, () => setGoals(prev));
+  };
+  const unarchiveGoal = (id) => {
+    const g = goals.find(x => x.id === id);
+    if (!g) return;
+    const prev = goals;
+    setGoals(goals.map(x => x.id === id ? { ...x, archived: false, archivedAt: null } : x));
+    showUndo(`${t.goalRestored}: ${g.name}`, () => setGoals(prev));
   };
 
   const updateGoalProgress = (id, progress) => setGoals(goals.map(g => g.id === id ? { ...g, progress } : g));
@@ -990,6 +1266,25 @@ function App() {
 
   const theme = THEMES[settings.theme] || THEMES.fire;
   const daysShort = settings.weekStart === 1 ? t.days_short_mon : t.days_short_sun;
+
+  // Welcome screen visible only when: loaded, not dismissed, dashboard tab, and data is empty.
+  const isEmpty = habits.length === 0 && goals.length === 0 && tasks.length === 0;
+  const showWelcome = loaded && !onboardingDone && isEmpty && activeTab === 'dashboard';
+
+  const handleLoadSampleFromSettings = () => {
+    const run = () => { loadSampleData(); setShowSettings(false); };
+    if (!isEmpty) {
+      setConfirm({
+        title: t.confirmSampleTitle,
+        body: t.confirmSampleBody,
+        confirmLabel: t.yesAdd,
+        tone: 'warn',
+        onConfirm: run
+      });
+    } else {
+      run();
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden"
@@ -1048,26 +1343,35 @@ function App() {
           </div>
         )}
 
-        <div className="mb-6 relative overflow-hidden rounded-3xl border border-amber-500/20 p-5"
-          style={{ background: `linear-gradient(135deg, ${theme.primary}14, ${theme.primaryDark}0a)` }}>
-          <div className="absolute -top-6 -right-6 opacity-10">
-            <Icon name="quote" className="w-24 h-24 text-amber-400" />
-          </div>
-          <div className="relative flex items-start gap-3">
-            <Icon name="sparkles" className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-amber-400/70 font-bold mb-1">{t.motivationTitle}</p>
-              <p className="text-amber-50/90 leading-relaxed italic" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>"{t.quotes[quoteIdx]}"</p>
+        {!showWelcome && (
+          <div className="mb-6 relative overflow-hidden rounded-3xl border border-amber-500/20 p-5"
+            style={{ background: `linear-gradient(135deg, ${theme.primary}14, ${theme.primaryDark}0a)` }}>
+            <div className="absolute -top-6 -right-6 opacity-10">
+              <Icon name="quote" className="w-24 h-24 text-amber-400" />
+            </div>
+            <div className="relative flex items-start gap-3">
+              <Icon name="sparkles" className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-amber-400/70 font-bold mb-1">{t.motivationTitle}</p>
+                <p className="text-amber-50/90 leading-relaxed italic" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>"{t.quotes[quoteIdx]}"</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {activeTab === 'dashboard' && <DashboardView t={t} stats={stats} habits={habits} goals={goals} settings={settings} daysShort={daysShort} onUpdateNumeric={updateNumericGoal} tick={tick} />}
-        {activeTab === 'habits' && <HabitsView t={t} habits={habits} settings={settings} onToggle={toggleHabit} onDelete={requestDeleteHabit} onUpdate={(id, u) => updateItem('habit', id, u)} onAdd={() => setModal({ type: 'habit' })} />}
-        {activeTab === 'goals' && <GoalsView t={t} goals={goals} onToggleSubtask={toggleSubtask} onDelete={requestDeleteGoal} onDeleteSubtask={requestDeleteSubtask} onUpdate={(id, u) => updateItem('goal', id, u)} onUpdateProgress={updateGoalProgress} onUpdateNumeric={updateNumericGoal} onAddSubtask={addSubtask} onAdd={() => setModal({ type: 'goal' })} />}
-        {activeTab === 'tasks' && <TasksView t={t} tasks={visibleTasks} settings={settings} archivedCount={archivedCount} onToggle={toggleTask} onDelete={requestDeleteTask} onUpdate={(id, u) => updateItem('task', id, u)} onAdd={() => setModal({ type: 'task' })} onToggleArchived={() => setSettings(s => ({ ...s, showArchived: !s.showArchived }))} lang={lang} />}
-        {activeTab === 'calendar' && <CalendarView t={t} habits={habits} tasks={visibleTasks} goals={goals} settings={settings} daysShort={daysShort} onToggleHabit={toggleHabit} lang={lang} />}
-        {activeTab === 'stats' && <StatsView t={t} stats={stats} habits={habits} goals={goals} tasks={visibleTasks} daysShort={daysShort} settings={settings} lang={lang} />}
+        {activeTab === 'dashboard' && (showWelcome
+          ? <WelcomeScreen t={t}
+              onAddHabit={() => { dismissOnboarding(); setModal({ type: 'habit' }); }}
+              onAddGoal={() => { dismissOnboarding(); setModal({ type: 'goal' }); }}
+              onAddTask={() => { dismissOnboarding(); setModal({ type: 'task' }); }}
+              onLoadSample={loadSampleData}
+              onSkip={dismissOnboarding} />
+          : <DashboardView t={t} stats={stats} habits={activeHabits} goals={activeGoals} tasks={visibleTasks} settings={settings} daysShort={daysShort} onUpdateNumeric={updateNumericGoal} onToggleTask={toggleTask} onSwipeDeleteTask={deleteTaskSwipe} tick={tick} lang={lang} />)}
+        {activeTab === 'habits' && <HabitsView t={t} habits={habits} settings={settings} archivedCount={archivedHabitCount} showArchivedItems={settings.showArchivedItems} onToggleShowArchived={() => setSettings(s => ({ ...s, showArchivedItems: !s.showArchivedItems }))} onToggle={toggleHabit} onDelete={requestDeleteHabit} onUpdate={(id, u) => updateItem('habit', id, u)} onArchive={archiveHabit} onUnarchive={unarchiveHabit} onAdd={() => setModal({ type: 'habit' })} lang={lang} />}
+        {activeTab === 'goals' && <GoalsView t={t} goals={goals} archivedCount={archivedGoalCount} showArchivedItems={settings.showArchivedItems} onToggleShowArchived={() => setSettings(s => ({ ...s, showArchivedItems: !s.showArchivedItems }))} onToggleSubtask={toggleSubtask} onDelete={requestDeleteGoal} onDeleteSubtask={requestDeleteSubtask} onUpdate={(id, u) => updateItem('goal', id, u)} onUpdateProgress={updateGoalProgress} onUpdateNumeric={updateNumericGoal} onAddSubtask={addSubtask} onArchive={archiveGoal} onSwipeArchive={requestArchiveGoal} onUnarchive={unarchiveGoal} onAdd={() => setModal({ type: 'goal' })} lang={lang} />}
+        {activeTab === 'tasks' && <TasksView t={t} tasks={visibleTasks} settings={settings} archivedCount={archivedCount} onToggle={toggleTask} onDelete={requestDeleteTask} onSwipeDelete={deleteTaskSwipe} onUpdate={(id, u) => updateItem('task', id, u)} onAdd={() => setModal({ type: 'task' })} onToggleArchived={() => setSettings(s => ({ ...s, showArchived: !s.showArchived }))} lang={lang} />}
+        {activeTab === 'calendar' && <CalendarView t={t} habits={activeHabits} tasks={visibleTasks} goals={activeGoals} settings={settings} daysShort={daysShort} onToggleHabit={toggleHabit} lang={lang} />}
+        {activeTab === 'stats' && <StatsView t={t} stats={stats} habits={activeHabits} goals={activeGoals} tasks={visibleTasks} daysShort={daysShort} settings={settings} lang={lang} />}
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-amber-500/10"
@@ -1093,6 +1397,10 @@ function App() {
         </div>
       </nav>
 
+      {!modal && !showSettings && !confirm && !showWelcome && (
+        <QuickAddFAB t={t} onSelect={(type) => setModal({ type })} />
+      )}
+
       {modal && <AddModal t={t} type={modal.type} onSave={addItem} onClose={() => setModal(null)} />}
       {showSettings && (
         <SettingsModal
@@ -1108,6 +1416,7 @@ function App() {
               onConfirm: () => { importData(file); setShowSettings(false); }
             });
           }}
+          onLoadSample={handleLoadSampleFromSettings}
           notifPermission={notifPermission} onRequestNotif={requestNotifPermission}
         />
       )}
@@ -1130,15 +1439,79 @@ function App() {
   );
 }
 
+// ============ WELCOME SCREEN ============
+// Shown on the Dashboard tab when data is completely empty and the user hasn't
+// dismissed onboarding. Offers: add first habit/goal/task, load sample data, skip.
+function WelcomeScreen({ t, onAddHabit, onAddGoal, onAddTask, onLoadSample, onSkip }) {
+  return (
+    <div className="space-y-5" style={{ animation: 'fadeIn 0.5s ease' }}>
+      <div className="relative overflow-hidden rounded-3xl border border-amber-500/20 p-6 sm:p-8"
+        style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(234, 88, 12, 0.06))' }}>
+        <div className="absolute -top-10 -right-10 opacity-[0.08] pointer-events-none" aria-hidden="true">
+          <Icon name="mountain" className="w-52 h-52 text-amber-300" strokeWidth={1.5} />
+        </div>
+        <div className="relative text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+            style={{ background: 'linear-gradient(135deg, var(--theme-primary, #f59e0b), var(--theme-accent, #c2410c))', boxShadow: '0 0 40px var(--theme-glow, rgba(245, 158, 11, 0.4))' }}>
+            <Icon name="sparkles" className="w-8 h-8 text-white" strokeWidth={2.2} />
+          </div>
+          <h2 className="text-2xl font-black text-amber-100 mb-2" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>{t.welcomeTitle}</h2>
+          <p className="text-sm text-amber-100/70 leading-relaxed max-w-md mx-auto">{t.welcomeBody}</p>
+        </div>
+
+        <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button onClick={onAddHabit} aria-label={t.welcomeAddHabit}
+            className="group flex flex-col items-center gap-2 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/15 transition-all active:scale-95 text-center">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Icon name="flame" className="w-6 h-6 text-amber-300" />
+            </div>
+            <span className="font-bold text-amber-100 text-sm leading-tight">{t.welcomeAddHabit}</span>
+          </button>
+          <button onClick={onAddGoal} aria-label={t.welcomeAddGoal}
+            className="group flex flex-col items-center gap-2 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/15 transition-all active:scale-95 text-center">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Icon name="target" className="w-6 h-6 text-amber-300" />
+            </div>
+            <span className="font-bold text-amber-100 text-sm leading-tight">{t.welcomeAddGoal}</span>
+          </button>
+          <button onClick={onAddTask} aria-label={t.welcomeAddTask}
+            className="group flex flex-col items-center gap-2 p-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/15 transition-all active:scale-95 text-center">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Icon name="checkCircle" className="w-6 h-6 text-amber-300" />
+            </div>
+            <span className="font-bold text-amber-100 text-sm leading-tight">{t.welcomeAddTask}</span>
+          </button>
+        </div>
+
+        <div className="relative flex items-center justify-center gap-4 mt-5 pt-4 border-t border-amber-500/10 flex-wrap">
+          <button onClick={onLoadSample}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-200 text-sm font-bold hover:bg-amber-500/30 transition-all active:scale-95">
+            <Icon name="sparkles" className="w-4 h-4" />
+            {t.seeExample}
+          </button>
+          <button onClick={onSkip}
+            className="text-xs font-semibold text-amber-100/40 hover:text-amber-100/80 transition-colors px-2 py-1">
+            {t.skipWelcome}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============ DASHBOARD ============
-function DashboardView({ t, stats, habits, goals, settings, daysShort, onUpdateNumeric, tick }) {
+function DashboardView({ t, stats, habits, goals, tasks, settings, daysShort, onUpdateNumeric, onToggleTask, onSwipeDeleteTask, tick, lang }) {
   const today = new Date().toDateString();
   return (
     <div className="space-y-5" style={{ animation: 'fadeIn 0.4s ease' }}>
       <div className="grid grid-cols-2 gap-3">
-        <StatCard label={t.todayProgress} value={`${stats.habitRate}%`} sub={`${stats.doneToday} ${t.ofTotal} ${habits.length}`} icon="zap" />
-        <StatCard label={t.longestStreak} value={stats.maxStreak} sub={stats.maxStreak === 1 ? t.day : t.days} icon="flame" highlight />
+        <StatCard label={t.todayProgress} value={`${stats.habitRate}%`} sub={`${stats.doneToday} ${t.ofTotal} ${habits.length}`} icon="zap" highlight />
+        <StatCard label={t.openTasksLabel} value={stats.openTasks} sub={t.open} icon="checkCircle" />
       </div>
+
+      <StreakChampionsSection t={t} habits={habits} settings={settings} />
+
+      <TasksTodaySection t={t} tasks={tasks} onToggleTask={onToggleTask} onSwipeDelete={onSwipeDeleteTask} />
 
       {habits.length > 0 && (
         <section>
@@ -1156,7 +1529,10 @@ function DashboardView({ t, stats, habits, goals, settings, daysShort, onUpdateN
                     {done ? <Icon name="checkCircle" className="w-5 h-5 text-black" strokeWidth={3} /> : <Icon name="circle" className="w-5 h-5 text-amber-200/30" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium truncate ${done ? 'text-amber-100' : 'text-amber-100/80'}`}>{h.name}</p>
+                    <p className={`text-sm font-medium truncate flex items-center gap-1.5 ${done ? 'text-amber-100' : 'text-amber-100/80'}`}>
+                      {h.important && <Icon name="star" className="w-3.5 h-3.5 flex-shrink-0" fill="#fbbf24" strokeWidth={0} />}
+                      <span className="truncate">{h.name}</span>
+                    </p>
                     <p className="text-xs text-amber-200/40">{CATEGORY_META[h.category]?.emoji} {t.categories[h.category]}</p>
                   </div>
                   {broken && !done && (
@@ -1272,24 +1648,234 @@ function InsightCard({ icon, title, body, tone }) {
   );
 }
 
+// Top 3 habits by longest historical streak, with gold/silver/bronze styling.
+// Renders nothing if no habit has any streak.
+function StreakChampionsSection({ t, habits, settings }) {
+  const champions = useMemo(() => {
+    if (!habits || habits.length === 0) return [];
+    return habits
+      .map(h => ({ habit: h, longest: calculateLongestStreak(h.completions, settings.freezeDays) }))
+      .filter(x => x.longest > 0)
+      .sort((a, b) => b.longest - a.longest)
+      .slice(0, 3);
+  }, [habits, settings.freezeDays]);
+
+  if (champions.length === 0) return null;
+
+  const medals = ['🏆', '🥈', '🥉'];
+  // Gold, silver, bronze badge gradients
+  const badgeGrad = [
+    'linear-gradient(135deg, #fde68a, #f59e0b, #b45309)',
+    'linear-gradient(135deg, #f1f5f9, #cbd5e1, #64748b)',
+    'linear-gradient(135deg, #fed7aa, #fb923c, #9a3412)'
+  ];
+  const cardBg = [
+    'linear-gradient(135deg, rgba(251,191,36,0.14), rgba(180,83,9,0.04))',
+    'linear-gradient(135deg, rgba(203,213,225,0.10), rgba(100,116,139,0.03))',
+    'linear-gradient(135deg, rgba(251,146,60,0.12), rgba(154,52,18,0.03))'
+  ];
+  const cardBorder = [
+    'rgba(251,191,36,0.40)',
+    'rgba(203,213,225,0.28)',
+    'rgba(251,146,60,0.35)'
+  ];
+  const numberColor = ['#fbbf24', '#e2e8f0', '#fb923c'];
+
+  return (
+    <section>
+      <h2 className="text-xs uppercase tracking-widest text-amber-300/60 font-bold mb-3 flex items-center gap-2">
+        <Icon name="trophy" className="w-3.5 h-3.5" />{t.streakChampions}
+      </h2>
+      <div className="space-y-2">
+        {champions.map(({ habit: h, longest }, i) => (
+          <div
+            key={h.id}
+            className="relative overflow-hidden rounded-2xl border p-4 flex items-center gap-3"
+            style={{ borderColor: cardBorder[i], background: cardBg[i] }}
+          >
+            {/* Medal badge */}
+            <div
+              className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+              style={{ background: badgeGrad[i], boxShadow: '0 4px 16px rgba(0,0,0,0.35)' }}
+              aria-label={`#${i + 1}`}
+            >
+              <span role="img" aria-hidden="true">{medals[i]}</span>
+            </div>
+            {/* Name + category */}
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] uppercase tracking-widest font-black mb-0.5" style={{ color: numberColor[i] }}>
+                #{i + 1} · {t.bestStreak}
+              </div>
+              <div className="text-base font-bold text-amber-100 truncate flex items-center gap-1.5">
+                {h.important && <Icon name="star" className="w-4 h-4 flex-shrink-0" fill="#fbbf24" strokeWidth={0} />}
+                <span className="truncate">{h.name}</span>
+              </div>
+              <div className="text-xs text-amber-200/40 truncate">{CATEGORY_META[h.category]?.emoji} {t.categories[h.category]}</div>
+            </div>
+            {/* Big streak number */}
+            <div className="flex-shrink-0 text-right pl-2">
+              <div
+                className="text-4xl font-black leading-none"
+                style={{ fontFamily: 'ui-serif, Georgia, serif', color: numberColor[i], textShadow: i === 0 ? '0 0 20px rgba(251,191,36,0.4)' : 'none' }}
+              >
+                {longest}
+              </div>
+              <div className="text-[10px] uppercase tracking-widest text-amber-200/50 font-bold mt-1">
+                {longest === 1 ? t.day : t.days}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// Undone tasks on dashboard — grouped into today/overdue and undated.
+// Tap-to-complete directly from dashboard; items disappear after completion.
+function TasksTodaySection({ t, tasks, onToggleTask, onSwipeDelete }) {
+  const todayMs = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }, []);
+
+  const { dated, undated } = useMemo(() => {
+    if (!tasks) return { dated: [], undated: [] };
+    const open = tasks.filter(ta => !ta.done);
+    const dated = open
+      .filter(ta => {
+        if (!ta.deadline) return false;
+        const dl = new Date(ta.deadline);
+        dl.setHours(0, 0, 0, 0);
+        return dl.getTime() <= todayMs;
+      })
+      .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
+    const undated = open
+      .filter(ta => !ta.deadline)
+      .slice(0, 5);
+    return { dated, undated };
+  }, [tasks, todayMs]);
+
+  if (dated.length === 0 && undated.length === 0) return null;
+
+  const priorityColor = { high: '#ef4444', medium: '#f59e0b', low: '#64748b' };
+
+  const renderRow = (ta, variant) => {
+    const isOverdue = variant === 'overdue';
+    const isToday = variant === 'today';
+    const borderClass = isOverdue
+      ? 'border-rose-500/30 bg-rose-500/5'
+      : isToday
+        ? 'border-amber-500/25 bg-amber-500/5'
+        : 'border-white/5 bg-white/[0.02]';
+    const metaColor = isOverdue ? 'text-rose-400' : isToday ? 'text-amber-300/80' : 'text-amber-200/50';
+    const metaLabel = isOverdue ? t.overdue : isToday ? t.today : t.noDeadline;
+    return (
+      <SwipeableRow
+        key={ta.id}
+        rounded="rounded-2xl"
+        onSwipeLeft={() => onToggleTask(ta.id)}
+        onSwipeRight={onSwipeDelete ? () => onSwipeDelete(ta.id) : null}
+        leftLabel={t.done} leftIcon="check" leftBg="rgba(16, 185, 129, 0.92)"
+        rightLabel={t.delete} rightIcon="trash" rightBg="rgba(244, 63, 94, 0.92)">
+      <div
+        className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${borderClass}`}
+      >
+        <button
+          onClick={() => onToggleTask(ta.id)}
+          aria-label={`${t.done}: ${ta.name}`}
+          className="w-9 h-9 rounded-xl flex-shrink-0 border flex items-center justify-center active:scale-90 transition-transform bg-white/5 border-amber-500/30 hover:bg-amber-500/10"
+        >
+          <Icon name="circle" className="w-5 h-5 text-amber-200/40" />
+        </button>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-amber-100 truncate">{ta.name}</p>
+          <p className={`text-xs font-bold mt-0.5 flex items-center gap-1.5 ${metaColor}`}>
+            {isOverdue && <Icon name="alert" className="w-3 h-3" />}
+            <span>{metaLabel}</span>
+            <span className="text-amber-200/30">· {CATEGORY_META[ta.category]?.emoji} {t.categories[ta.category]}</span>
+          </p>
+        </div>
+        {ta.priority && (
+          <span
+            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+            style={{ background: priorityColor[ta.priority] || priorityColor.medium }}
+            aria-label={`${t.priority}: ${t[ta.priority] || ta.priority}`}
+          />
+        )}
+      </div>
+      </SwipeableRow>
+    );
+  };
+
+  return (
+    <section>
+      <h2 className="text-xs uppercase tracking-widest text-amber-300/60 font-bold mb-3 flex items-center gap-2">
+        <Icon name="checkCircle" className="w-3.5 h-3.5" />{t.tasksToday}
+        <span className="ml-auto text-amber-200/50 normal-case tracking-normal font-bold">{dated.length + undated.length}</span>
+      </h2>
+      <div className="space-y-2">
+        {dated.map(ta => {
+          const dl = new Date(ta.deadline);
+          dl.setHours(0, 0, 0, 0);
+          return renderRow(ta, dl.getTime() < todayMs ? 'overdue' : 'today');
+        })}
+        {undated.length > 0 && dated.length > 0 && (
+          <div className="pt-2 mt-2 border-t border-white/5">
+            <div className="text-[10px] uppercase tracking-widest text-amber-200/40 font-bold mb-2">{t.noDeadline}</div>
+          </div>
+        )}
+        {undated.map(ta => renderRow(ta, 'undated'))}
+      </div>
+    </section>
+  );
+}
+
 // ============ HABITS ============
-function HabitsView({ t, habits, settings, onToggle, onDelete, onUpdate, onAdd }) {
+function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onToggleShowArchived, onToggle, onDelete, onUpdate, onArchive, onUnarchive, onAdd, lang }) {
   const today = new Date().toDateString();
   const [expanded, setExpanded] = useState(null);
   const [query, setQuery] = useState('');
 
+  // т.2.6: archived habits live alongside active ones in storage but are
+  // rendered in a separate, dimmed section below the active list.
+  const activeList   = useMemo(() => habits.filter(h => !h.archived), [habits]);
+  const archivedList = useMemo(() => habits.filter(h => h.archived),  [habits]);
+
   const filtered = useMemo(() => {
-    if (!query.trim()) return habits;
-    return habits.filter(h => fuzzyMatch(query, h.name) || fuzzyMatch(query, h.notes || ''));
-  }, [habits, query]);
+    const base = !query.trim() ? activeList : activeList.filter(h => fuzzyMatch(query, h.name) || fuzzyMatch(query, h.notes || ''));
+    // Important habits float to the top, preserving relative order within each group.
+    return base.slice().sort((a, b) => {
+      const ai = a.important ? 1 : 0;
+      const bi = b.important ? 1 : 0;
+      return bi - ai;
+    });
+  }, [activeList, query]);
+
+  const fmtArchivedDate = (iso) => {
+    if (!iso) return '';
+    try { return new Date(iso).toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    catch { return ''; }
+  };
 
   return (
     <div style={{ animation: 'fadeIn 0.4s ease' }}>
-      <SectionHeader title={t.habits} count={habits.length} onAdd={onAdd} addLabel={t.addHabit} />
-      {habits.length >= 4 && (
+      <SectionHeader title={t.habits} count={activeList.length} onAdd={onAdd} addLabel={t.addHabit} />
+      {activeList.length >= 4 && (
         <SearchInput value={query} onChange={setQuery} placeholder={t.searchPlaceholder || (t.habits + '…')} />
       )}
-      {habits.length === 0 ? <EmptyState message={t.noHabits} icon="flame" /> : filtered.length === 0 ? (
+      {archivedCount > 0 && (
+        <button onClick={onToggleShowArchived}
+          className="w-full flex items-center gap-2 p-2 mb-3 rounded-xl border border-white/5 bg-white/[0.02] text-amber-200/60 text-xs hover:bg-white/[0.04] transition-all">
+          <Icon name="archive" className="w-3.5 h-3.5" />
+          <span className="font-bold">{archivedCount} {t.archivedHabits.toLowerCase()}</span>
+          <span className="ml-auto text-amber-400 font-bold">{showArchivedItems ? t.hideArchivedItems : t.showArchivedItems}</span>
+        </button>
+      )}
+      {habits.length === 0 ? <EmptyState message={t.noHabits} icon="flame" /> : activeList.length === 0 && !showArchivedItems ? (
+        <EmptyState message={t.noHabits} icon="flame" />
+      ) : filtered.length === 0 && activeList.length > 0 ? (
         <EmptyState message={t.noMatches || (t.noHabits)} icon="search" />
       ) : (
         <div className="space-y-3">
@@ -1297,11 +1883,22 @@ function HabitsView({ t, habits, settings, onToggle, onDelete, onUpdate, onAdd }
             const done = h.completions.includes(today);
             const streak = calculateStreak(h.completions, settings.freezeDays);
             const broken = isStreakBroken(h.completions, settings.freezeDays);
+            const freezeUsed = calculateFreezeUsed(h.completions, settings.freezeDays);
             const cat = CATEGORY_META[h.category];
-            const progressPct = Math.min((streak / (h.target || 30)) * 100, 100);
+            const hasTarget = typeof h.target === 'number' && h.target > 0;
+            const longest = calculateLongestStreak(h.completions, settings.freezeDays);
+            const progressPct = hasTarget ? Math.min((streak / h.target) * 100, 100) : 0;
             const isOpen = expanded === h.id;
             return (
-              <div key={h.id} className={`relative overflow-hidden rounded-3xl border transition-all ${done ? 'border-amber-500/40' : broken ? 'border-rose-500/30' : 'border-white/5'}`}
+              <SwipeableRow
+                key={h.id}
+                rounded="rounded-3xl"
+                disabled={isOpen}
+                onSwipeLeft={() => onToggle(h.id)}
+                leftLabel={done ? t.restoreItem : t.done}
+                leftIcon={done ? 'x' : 'check'}
+                leftBg={done ? 'rgba(148, 163, 184, 0.85)' : 'rgba(245, 158, 11, 0.95)'}>
+              <div className={`relative overflow-hidden rounded-3xl border transition-all ${done ? 'border-amber-500/40' : broken ? 'border-rose-500/30' : 'border-white/5'}`}
                 style={{ background: done ? 'linear-gradient(135deg, var(--theme-glow-soft), rgba(255,255,255,0.02))' : broken ? 'rgba(244, 63, 94, 0.05)' : 'rgba(255,255,255,0.02)' }}>
                 <div className="flex items-stretch">
                   <button onClick={() => onToggle(h.id)} className={`flex-shrink-0 w-16 flex items-center justify-center transition-all ${done ? 'bg-amber-500' : 'bg-white/[0.03] hover:bg-white/[0.06]'}`}>
@@ -1309,8 +1906,20 @@ function HabitsView({ t, habits, settings, onToggle, onDelete, onUpdate, onAdd }
                   </button>
                   <div className="flex-1 p-4 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <h3 className={`font-bold leading-tight ${done ? 'text-amber-100' : 'text-amber-50'}`}>{h.name}</h3>
+                      <h3 className={`font-bold leading-tight flex items-center gap-1.5 ${done ? 'text-amber-100' : 'text-amber-50'}`}>
+                        {h.important && (
+                          <Icon name="star" className="w-4 h-4 flex-shrink-0" fill="#fbbf24" strokeWidth={0} />
+                        )}
+                        <span>{h.name}</span>
+                      </h3>
                       <div className="flex gap-1">
+                        <button
+                          onClick={() => onUpdate(h.id, { important: !h.important })}
+                          aria-label={h.important ? t.unmarkImportant : t.markImportant}
+                          aria-pressed={!!h.important}
+                          className={`p-1 transition-colors ${h.important ? 'text-amber-300' : 'text-amber-200/30 hover:text-amber-400'}`}>
+                          <Icon name="star" className="w-3.5 h-3.5" fill={h.important ? '#fbbf24' : 'none'} strokeWidth={h.important ? 0 : 2} />
+                        </button>
                         <button onClick={() => setExpanded(isOpen ? null : h.id)} className="p-1 text-amber-200/40 hover:text-amber-400">
                           <Icon name="edit" className="w-3.5 h-3.5" />
                         </button>
@@ -1338,26 +1947,47 @@ function HabitsView({ t, habits, settings, onToggle, onDelete, onUpdate, onAdd }
                           <span className="font-black text-orange-300">{streak} {streak === 1 ? t.day : t.days}</span>
                         </span>
                       )}
-                      {settings.freezeDays > 0 && streak > 0 && !broken && !done && (
-                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-500/15 border border-sky-500/30">
+                      {freezeUsed > 0 && !broken && (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-500/15 border border-sky-500/30"
+                          title={`${t.streakProtected} · ${freezeUsed} ${freezeUsed === 1 ? t.freezeUsed : t.freezeUsedPlural} ${t.freezeOf} ${settings.freezeDays}`}>
                           <Icon name="snowflake" className="w-3 h-3 text-sky-400" />
-                          <span className="font-black text-sky-300">{t.streakProtected}</span>
+                          <span className="font-black text-sky-300">{t.streakProtected} · {freezeUsed}/{settings.freezeDays}</span>
                         </span>
                       )}
                     </div>
-                    <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, background: 'linear-gradient(to right, var(--theme-primary), var(--theme-primary-light))' }} />
-                    </div>
-                    <div className="flex justify-between items-center mt-1">
-                      <span className="text-[10px] text-amber-200/40 font-bold">{streak}/{h.target || 30}</span>
-                      {progressPct >= 100 && (
-                        <span className="flex items-center gap-1 text-[10px] font-black text-amber-400">
-                          <Icon name="trophy" className="w-3 h-3" /> {t.streakBadge}
-                        </span>
-                      )}
-                    </div>
+                    {hasTarget ? (
+                      <>
+                        <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, background: 'linear-gradient(to right, var(--theme-primary), var(--theme-primary-light))' }} />
+                        </div>
+                        <div className="flex justify-between items-center mt-1">
+                          <span className="text-[10px] text-amber-200/40 font-bold">{streak}/{h.target}</span>
+                          {progressPct >= 100 && (
+                            <span className="flex items-center gap-1 text-[10px] font-black text-amber-400">
+                              <Icon name="trophy" className="w-3 h-3" /> {t.streakBadge}
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex justify-between items-center mt-1 text-[10px] font-bold">
+                        <span className="text-amber-200/50">{t.activeStreak}: <span className="text-amber-300">{streak}</span></span>
+                        <span className="text-amber-200/50">{t.longestStreak}: <span className="text-amber-300">{longest}</span></span>
+                      </div>
+                    )}
                     {isOpen && (
                       <div className="mt-3 pt-3 border-t border-white/5 space-y-2">
+                        <div>
+                          <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="target" className="w-3 h-3" />{t.targetOptional}</label>
+                          <input type="number" min="1" inputMode="numeric" value={hasTarget ? h.target : ''} placeholder={t.noTarget}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val === '') { onUpdate(h.id, { target: null }); return; }
+                              const n = parseInt(val);
+                              onUpdate(h.id, { target: (Number.isFinite(n) && n > 0) ? n : null });
+                            }}
+                            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 placeholder-amber-200/30 focus:outline-none focus:border-amber-500/50" />
+                        </div>
                         <div>
                           <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="bell" className="w-3 h-3" />{t.reminderTime}</label>
                           <input type="time" value={h.reminderTime || ''} onChange={(e) => onUpdate(h.id, { reminderTime: e.target.value })}
@@ -1368,13 +1998,64 @@ function HabitsView({ t, habits, settings, onToggle, onDelete, onUpdate, onAdd }
                           <textarea value={h.notes || ''} onChange={(e) => onUpdate(h.id, { notes: e.target.value })} placeholder={t.addNote} rows={2}
                             className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 placeholder-amber-200/30 focus:outline-none focus:border-amber-500/50 resize-none" />
                         </div>
+                        <button onClick={() => { setExpanded(null); onArchive(h.id); }}
+                          className="w-full py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-amber-500/20 transition-all active:scale-[0.99]">
+                          <Icon name="archive" className="w-3.5 h-3.5" /> {t.retireHabit}
+                        </button>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
+              </SwipeableRow>
             );
           })}
+        </div>
+      )}
+      {showArchivedItems && archivedList.length > 0 && (
+        <div className="mt-6">
+          <h4 className="text-[10px] uppercase tracking-widest text-amber-200/40 font-bold mb-2 flex items-center gap-1.5">
+            <Icon name="archive" className="w-3 h-3" /> {t.archivedHabits} · {archivedList.length}
+          </h4>
+          <div className="space-y-2">
+            {archivedList.map(h => {
+              const longest = calculateLongestStreak(h.completions, settings.freezeDays);
+              return (
+                <div key={h.id} className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.015] opacity-70">
+                  <div className="flex items-stretch">
+                    <div className="flex-shrink-0 w-14 flex items-center justify-center bg-white/[0.02]">
+                      <Icon name="archive" className="w-5 h-5 text-amber-200/30" />
+                    </div>
+                    <div className="flex-1 p-3 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-bold text-amber-100/70 text-sm truncate leading-tight">{h.name}</h3>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <button onClick={() => onUnarchive(h.id)} aria-label={t.restoreItem}
+                            className="px-2 py-1 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-bold hover:bg-amber-500/20 transition-all active:scale-95">
+                            {t.restoreItem}
+                          </button>
+                          <button onClick={() => onDelete(h.id)} aria-label={t.delete} className="p-1 text-amber-200/30 hover:text-rose-400">
+                            <Icon name="trash" className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-amber-200/40 flex-wrap">
+                        <span>{CATEGORY_META[h.category]?.emoji} {t.categories[h.category]}</span>
+                        {longest > 0 && (
+                          <span className="flex items-center gap-1">
+                            <Icon name="flame" className="w-3 h-3" /> {t.longestStreak}: {longest}
+                          </span>
+                        )}
+                        {h.archivedAt && (
+                          <span className="ml-auto">{t.archivedOn} {fmtArchivedDate(h.archivedAt)}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -1382,36 +2063,65 @@ function HabitsView({ t, habits, settings, onToggle, onDelete, onUpdate, onAdd }
 }
 
 // ============ GOALS ============
-function GoalsView({ t, goals, onToggleSubtask, onDelete, onDeleteSubtask, onUpdate, onUpdateProgress, onUpdateNumeric, onAddSubtask, onAdd }) {
+function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArchived, onToggleSubtask, onDelete, onDeleteSubtask, onUpdate, onUpdateProgress, onUpdateNumeric, onAddSubtask, onArchive, onSwipeArchive, onUnarchive, onAdd, lang }) {
   const [expanded, setExpanded] = useState(null);
   const [newSub, setNewSub] = useState('');
   const [query, setQuery] = useState('');
 
+  // т.2.6: split active vs archived goals — archived render in a faded section below.
+  const activeList   = useMemo(() => goals.filter(g => !g.archived), [goals]);
+  const archivedList = useMemo(() => goals.filter(g => g.archived),  [goals]);
+
   const filtered = useMemo(() => {
-    if (!query.trim()) return goals;
-    return goals.filter(g =>
+    if (!query.trim()) return activeList;
+    return activeList.filter(g =>
       fuzzyMatch(query, g.name) ||
       fuzzyMatch(query, g.notes || '') ||
       (g.subtasks || []).some(s => fuzzyMatch(query, s.text))
     );
-  }, [goals, query]);
+  }, [activeList, query]);
+
+  const fmtArchivedDate = (iso) => {
+    if (!iso) return '';
+    try { return new Date(iso).toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    catch { return ''; }
+  };
 
   return (
     <div style={{ animation: 'fadeIn 0.4s ease' }}>
-      <SectionHeader title={t.goals} count={goals.length} onAdd={onAdd} addLabel={t.addGoal} />
-      {goals.length >= 4 && (
+      <SectionHeader title={t.goals} count={activeList.length} onAdd={onAdd} addLabel={t.addGoal} />
+      {activeList.length >= 4 && (
         <SearchInput value={query} onChange={setQuery} placeholder={t.searchPlaceholder || (t.goals + '…')} />
       )}
-      {goals.length === 0 ? <EmptyState message={t.noGoals} icon="target" /> : filtered.length === 0 ? (
-        <EmptyState message={t.noMatches || t.noGoals} icon="search" />
-      ) : (
+      {archivedCount > 0 && (
+        <button onClick={onToggleShowArchived}
+          className="w-full flex items-center gap-2 p-2 mb-3 rounded-xl border border-white/5 bg-white/[0.02] text-amber-200/60 text-xs hover:bg-white/[0.04] transition-all">
+          <Icon name="archive" className="w-3.5 h-3.5" />
+          <span className="font-bold">{archivedCount} {t.archivedGoals.toLowerCase()}</span>
+          <span className="ml-auto text-amber-400 font-bold">{showArchivedItems ? t.hideArchivedItems : t.showArchivedItems}</span>
+        </button>
+      )}
+      {goals.length === 0 ? <EmptyState message={t.noGoals} icon="target" />
+        : activeList.length === 0 && !showArchivedItems ? (
+          <EmptyState message={t.noGoals} icon="target" />
+        )
+        : filtered.length === 0 && activeList.length > 0 ? (
+          <EmptyState message={t.noMatches || t.noGoals} icon="search" />
+        ) : (
         <div className="space-y-3">
           {filtered.map(g => {
             const isOpen = expanded === g.id;
             const cat = CATEGORY_META[g.category];
             const daysLeft = g.deadline ? Math.ceil((new Date(g.deadline) - new Date()) / 86400000) : null;
             return (
-              <div key={g.id} className="rounded-3xl border border-white/5 bg-white/[0.02] overflow-hidden">
+              <SwipeableRow
+                key={g.id}
+                rounded="rounded-3xl"
+                disabled={isOpen}
+                onSwipeRight={onSwipeArchive ? () => onSwipeArchive(g.id) : null}
+                rightLabel={t.archiveAction} rightIcon="archive"
+                rightBg="rgba(217, 119, 6, 0.92)">
+              <div className="rounded-3xl border border-white/5 bg-white/[0.02] overflow-hidden">
                 <button onClick={() => setExpanded(isOpen ? null : g.id)} className="w-full p-4 text-left">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex-1 min-w-0">
@@ -1499,14 +2209,65 @@ function GoalsView({ t, goals, onToggleSubtask, onDelete, onDeleteSubtask, onUpd
                         className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 placeholder-amber-200/30 focus:outline-none focus:border-amber-500/50 resize-none" />
                     </div>
 
+                    <button onClick={() => { setExpanded(null); onArchive(g.id); }}
+                      className="w-full py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.99]"
+                      style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.15), rgba(234,179,8,0.15))', border: '1px solid rgba(251,191,36,0.35)', color: '#fcd34d' }}>
+                      <Icon name="trophy" className="w-3.5 h-3.5" /> {t.completeAndArchiveGoal}
+                    </button>
                     <button onClick={() => onDelete(g.id)} className="w-full py-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold flex items-center justify-center gap-1.5">
                       <Icon name="trash" className="w-3.5 h-3.5" /> {t.delete}
                     </button>
                   </div>
                 )}
               </div>
+              </SwipeableRow>
             );
           })}
+        </div>
+      )}
+      {showArchivedItems && archivedList.length > 0 && (
+        <div className="mt-6">
+          <h4 className="text-[10px] uppercase tracking-widest text-amber-200/40 font-bold mb-2 flex items-center gap-1.5">
+            <Icon name="archive" className="w-3 h-3" /> {t.archivedGoals} · {archivedList.length}
+          </h4>
+          <div className="space-y-2">
+            {archivedList.map(g => {
+              const cat = CATEGORY_META[g.category];
+              return (
+                <div key={g.id} className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.015] opacity-75 p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                      style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.12), rgba(234,179,8,0.08))' }}>
+                      <Icon name="trophy" className="w-5 h-5 text-amber-300/70" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-bold text-amber-100/70 text-sm truncate leading-tight flex items-center gap-1.5">
+                          <span className="text-base">{cat?.emoji}</span> {g.name}
+                        </h3>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <button onClick={() => onUnarchive(g.id)} aria-label={t.restoreItem}
+                            className="px-2 py-1 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-bold hover:bg-amber-500/20 transition-all active:scale-95">
+                            {t.restoreItem}
+                          </button>
+                          <button onClick={() => onDelete(g.id)} aria-label={t.delete} className="p-1 text-amber-200/30 hover:text-rose-400">
+                            <Icon name="trash" className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-amber-200/40 flex-wrap">
+                        <span className="font-bold text-amber-300/70">{g.progress}%</span>
+                        <span>· {t.categories[g.category]}</span>
+                        {g.archivedAt && (
+                          <span className="ml-auto">{t.archivedOn} {fmtArchivedDate(g.archivedAt)}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -1514,7 +2275,7 @@ function GoalsView({ t, goals, onToggleSubtask, onDelete, onDeleteSubtask, onUpd
 }
 
 // ============ TASKS ============
-function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onUpdate, onAdd, onToggleArchived, lang }) {
+function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onSwipeDelete, onUpdate, onAdd, onToggleArchived, lang }) {
   const [expanded, setExpanded] = useState(null);
   const [query, setQuery] = useState('');
   const sorted = useMemo(() => {
@@ -1563,7 +2324,15 @@ function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onUp
             const overdue = ta.deadline && new Date(ta.deadline) < new Date() && !ta.done;
             const isOpen = expanded === ta.id;
             return (
-              <div key={ta.id} className={`rounded-2xl border transition-all ${ta.done ? 'opacity-50 border-white/5 bg-white/[0.01]' : overdue ? 'border-rose-500/30 bg-rose-500/5' : 'border-white/5 bg-white/[0.02]'}`}>
+              <SwipeableRow
+                key={ta.id}
+                rounded="rounded-2xl"
+                disabled={isOpen}
+                onSwipeLeft={ta.done ? null : () => onToggle(ta.id)}
+                onSwipeRight={() => onSwipeDelete(ta.id)}
+                leftLabel={t.done} leftIcon="check" leftBg="rgba(16, 185, 129, 0.92)"
+                rightLabel={t.delete} rightIcon="trash" rightBg="rgba(244, 63, 94, 0.92)">
+              <div className={`rounded-2xl border transition-all ${ta.done ? 'opacity-50 border-white/5 bg-white/[0.01]' : overdue ? 'border-rose-500/30 bg-rose-500/5' : 'border-white/5 bg-white/[0.02]'}`}>
                 <div className="flex items-center gap-3 p-3">
                   <button onClick={() => onToggle(ta.id)} className="flex-shrink-0">
                     {ta.done ? <Icon name="checkCircle" className="w-6 h-6 text-amber-400" strokeWidth={2.5} /> : <Icon name="circle" className="w-6 h-6 text-amber-200/30 hover:text-amber-400" strokeWidth={2} />}
@@ -1608,6 +2377,7 @@ function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onUp
                   </div>
                 )}
               </div>
+              </SwipeableRow>
             );
           })}
         </div>
@@ -1658,6 +2428,19 @@ function CalendarView({ t, habits, tasks, goals, settings, daysShort, onToggleHa
   const isToday = (d) => d && d.toDateString() === today.toDateString();
   const isSelected = (d) => d && d.toDateString() === selectedDay.toDateString();
   const isFuture = (d) => d && d > today;
+
+  // Backfill: how many whole days the selected day is behind today (0 = today,
+  // positive = past, negative = future). Used to decide if habits can be
+  // toggled retroactively on the selected day.
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const selStart = new Date(selectedDay.getFullYear(), selectedDay.getMonth(), selectedDay.getDate());
+  const diffDays = Math.round((todayStart - selStart) / 86400000);
+  const backfillWindow = Math.max(0, settings.backfillDays || 0);
+  const isSelToday = diffDays === 0;
+  const isSelFuture = diffDays < 0;
+  const canBackfill = diffDays > 0 && diffDays <= backfillWindow;
+  const canToggleSelected = isSelToday || canBackfill;
+  const isSelPastLocked = diffDays > backfillWindow;
 
   return (
     <div style={{ animation: 'fadeIn 0.4s ease' }}>
@@ -1726,24 +2509,48 @@ function CalendarView({ t, habits, tasks, goals, settings, daysShort, onToggleHa
           {selectedDay.toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })}
         </h3>
 
+        {canBackfill && habits.length > 0 && (
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/20 text-[11px] text-amber-200/80">
+            <Icon name="info" className="w-3.5 h-3.5 text-amber-300 flex-shrink-0" />
+            <span>{t.backfillHint}</span>
+          </div>
+        )}
+        {isSelPastLocked && habits.length > 0 && (
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02] border border-white/5 text-[11px] text-amber-200/50">
+            <Icon name="info" className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>{t.backfillLocked}</span>
+          </div>
+        )}
+
         {selectedData.habitsDone.length > 0 && (
           <div>
             <h4 className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold mb-2">✓ {t.done}</h4>
             {selectedData.habitsDone.map(h => (
-              <div key={h.id} className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 mb-1">
-                <Icon name="checkCircle" className="w-4 h-4 text-amber-400" />
-                <span className="text-sm text-amber-100">{h.name}</span>
-              </div>
+              canToggleSelected ? (
+                <button key={h.id} onClick={() => onToggleHabit(h.id, selectedDay.toDateString())}
+                  className="w-full flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 mb-1 text-left hover:bg-amber-500/15 transition-colors">
+                  <Icon name="checkCircle" className="w-4 h-4 text-amber-400" />
+                  {h.important && <Icon name="star" className="w-3.5 h-3.5 flex-shrink-0" fill="#fbbf24" strokeWidth={0} />}
+                  <span className="text-sm text-amber-100">{h.name}</span>
+                </button>
+              ) : (
+                <div key={h.id} className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 mb-1">
+                  <Icon name="checkCircle" className="w-4 h-4 text-amber-400" />
+                  {h.important && <Icon name="star" className="w-3.5 h-3.5 flex-shrink-0" fill="#fbbf24" strokeWidth={0} />}
+                  <span className="text-sm text-amber-100">{h.name}</span>
+                </div>
+              )
             ))}
           </div>
         )}
 
-        {selectedData.habitsNotDone.length > 0 && isToday(selectedDay) && (
+        {selectedData.habitsNotDone.length > 0 && canToggleSelected && (
           <div>
             <h4 className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold mb-2">{t.habits}</h4>
             {selectedData.habitsNotDone.map(h => (
-              <button key={h.id} onClick={() => onToggleHabit(h.id)} className="w-full flex items-center gap-2 p-2 rounded-lg bg-white/[0.02] border border-white/5 mb-1 text-left">
+              <button key={h.id} onClick={() => onToggleHabit(h.id, selectedDay.toDateString())} className="w-full flex items-center gap-2 p-2 rounded-lg bg-white/[0.02] border border-white/5 mb-1 text-left">
                 <Icon name="circle" className="w-4 h-4 text-amber-200/30" />
+                {h.important && <Icon name="star" className="w-3.5 h-3.5 flex-shrink-0" fill="#fbbf24" strokeWidth={0} />}
                 <span className="text-sm text-amber-100/80">{h.name}</span>
               </button>
             ))}
@@ -1874,7 +2681,7 @@ function StatsView({ t, stats, habits, goals, tasks, daysShort, settings, lang }
             {insights.topHabit && insights.topStreak > 0 && (
               <InsightCard icon="flame"
                 title={bg ? 'Най-последователен навик' : 'Most consistent habit'}
-                body={`${insights.topHabit.name} — ${insights.topStreak} ${bg ? 'поредни дни' : 'day streak'}`} />
+                body={`${insights.topHabit.important ? '★ ' : ''}${insights.topHabit.name} — ${insights.topStreak} ${bg ? 'поредни дни' : 'day streak'}`} />
             )}
             {insights.nextGoal && (
               <InsightCard icon="target"
@@ -1932,6 +2739,134 @@ function StatsView({ t, stats, habits, goals, tasks, daysShort, settings, lang }
 }
 
 // ============ SHARED ============
+// ============ SWIPE GESTURES (т.2.7) ============
+// Touch-based horizontal swipe wrapper. Shows a colored reveal layer with
+// an icon + label as the user drags; fires onSwipeLeft / onSwipeRight once
+// the drag crosses THRESHOLD. Vertical scroll still works via touch-action.
+// Non-touch input never triggers — existing buttons remain the primary UX
+// for mouse/keyboard. A synthetic click that follows a successful swipe is
+// swallowed in the capture phase so parent onClick handlers don't fire.
+function SwipeableRow({
+  onSwipeLeft, onSwipeRight,
+  leftLabel, rightLabel,
+  leftIcon = 'check', rightIcon = 'trash',
+  leftBg = 'rgba(16, 185, 129, 0.92)',
+  rightBg = 'rgba(244, 63, 94, 0.92)',
+  disabled = false,
+  rounded = 'rounded-2xl',
+  children
+}) {
+  const [dx, setDx] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const startXRef = useRef(null);
+  const startYRef = useRef(null);
+  const axisRef = useRef(null);     // 'h' | 'v' | null
+  const firedRef = useRef(false);   // swallows the next click after swipe
+  const THRESHOLD = 80;
+  const MAX_DRAG = 160;
+
+  const canLeft  = !!onSwipeLeft  && !disabled;
+  const canRight = !!onSwipeRight && !disabled;
+
+  const resetGesture = () => {
+    setDx(0);
+    setDragging(false);
+    startXRef.current = null;
+    startYRef.current = null;
+    axisRef.current = null;
+  };
+
+  const onTouchStart = (e) => {
+    if (disabled || !canLeft && !canRight) return;
+    if (e.touches.length !== 1) return;
+    const p = e.touches[0];
+    startXRef.current = p.clientX;
+    startYRef.current = p.clientY;
+    axisRef.current = null;
+    firedRef.current = false;
+    setDragging(true);
+  };
+
+  const onTouchMove = (e) => {
+    if (disabled || startXRef.current == null) return;
+    const p = e.touches[0];
+    const rawDx = p.clientX - startXRef.current;
+    const rawDy = p.clientY - startYRef.current;
+    if (axisRef.current == null) {
+      if (Math.abs(rawDx) < 10 && Math.abs(rawDy) < 10) return;
+      axisRef.current = Math.abs(rawDx) > Math.abs(rawDy) ? 'h' : 'v';
+    }
+    if (axisRef.current !== 'h') return;
+    let d = rawDx;
+    if (!canLeft  && d < 0) d = 0;
+    if (!canRight && d > 0) d = 0;
+    if (Math.abs(d) > MAX_DRAG) d = Math.sign(d) * (MAX_DRAG + (Math.abs(d) - MAX_DRAG) * 0.25);
+    setDx(d);
+  };
+
+  const onTouchEnd = () => {
+    let fired = false;
+    if (axisRef.current === 'h') {
+      if (dx <= -THRESHOLD && canLeft)       { onSwipeLeft();  fired = true; }
+      else if (dx >= THRESHOLD && canRight)  { onSwipeRight(); fired = true; }
+    }
+    firedRef.current = fired;
+    resetGesture();
+  };
+
+  const onTouchCancel = () => {
+    firedRef.current = false;
+    resetGesture();
+  };
+
+  const onClickCapture = (e) => {
+    if (firedRef.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      firedRef.current = false;
+    }
+  };
+
+  const activeSide = dx < 0 ? 'left' : dx > 0 ? 'right' : null;
+  const crossed = Math.abs(dx) >= THRESHOLD;
+  const bg = activeSide === 'left' ? leftBg : activeSide === 'right' ? rightBg : 'transparent';
+
+  return (
+    <div className={`relative overflow-hidden ${rounded}`}>
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 flex items-center pointer-events-none"
+        style={{ background: bg, opacity: activeSide ? 1 : 0, transition: 'opacity 0.12s ease' }}>
+        {activeSide === 'right' && rightLabel && (
+          <div className="flex items-center gap-2 pl-5 text-white">
+            <Icon name={rightIcon} className={`w-5 h-5 transition-transform ${crossed ? 'scale-125' : ''}`} strokeWidth={2.5} />
+            <span className={`font-black text-xs uppercase tracking-wider transition-opacity ${crossed ? 'opacity-100' : 'opacity-80'}`}>{rightLabel}</span>
+          </div>
+        )}
+        {activeSide === 'left' && leftLabel && (
+          <div className="flex items-center gap-2 ml-auto pr-5 text-white">
+            <span className={`font-black text-xs uppercase tracking-wider transition-opacity ${crossed ? 'opacity-100' : 'opacity-80'}`}>{leftLabel}</span>
+            <Icon name={leftIcon} className={`w-5 h-5 transition-transform ${crossed ? 'scale-125' : ''}`} strokeWidth={2.5} />
+          </div>
+        )}
+      </div>
+      <div
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchCancel}
+        onClickCapture={onClickCapture}
+        style={{
+          transform: `translateX(${dx}px)`,
+          transition: dragging ? 'none' : 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
+          touchAction: 'pan-y'
+        }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function SectionHeader({ title, count, onAdd, addLabel }) {
   return (
     <div className="flex items-center justify-between mb-4">
@@ -1994,19 +2929,22 @@ function AddModal({ t, type, onSave, onClose }) {
   const [category, setCategory] = useState('personal');
   const [deadline, setDeadline] = useState('');
   const [priority, setPriority] = useState('medium');
-  const [target, setTarget] = useState(30);
+  const [target, setTarget] = useState('');
   const [reminderTime, setReminderTime] = useState('');
   const [notes, setNotes] = useState('');
   const [useNumeric, setUseNumeric] = useState(false);
   const [numTarget, setNumTarget] = useState(100);
   const [numUnit, setNumUnit] = useState('');
+  const [important, setImportant] = useState(false);
 
   const handleSave = () => {
     if (!name.trim()) return;
     const data = { name: name.trim(), category, notes };
     if (type === 'habit') {
-      data.target = parseInt(target) || 30;
+      const parsedTarget = parseInt(target);
+      data.target = (Number.isFinite(parsedTarget) && parsedTarget > 0) ? parsedTarget : null;
       data.reminderTime = reminderTime;
+      data.important = important;
     }
     if (type === 'goal') {
       data.deadline = deadline;
@@ -2067,15 +3005,20 @@ function AddModal({ t, type, onSave, onClose }) {
           {type === 'habit' && (
             <>
               <div>
-                <label className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold">{t.target}</label>
-                <input type="number" value={target} onChange={(e) => setTarget(e.target.value)}
-                  className="mt-1.5 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-amber-50 focus:outline-none focus:border-amber-500/50" />
+                <label className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold">{t.targetOptional}</label>
+                <input type="number" min="1" inputMode="numeric" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="30"
+                  className="mt-1.5 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-amber-50 placeholder-amber-200/30 focus:outline-none focus:border-amber-500/50" />
               </div>
               <div>
                 <label className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold flex items-center gap-1"><Icon name="bell" className="w-3 h-3" />{t.reminderTime}</label>
                 <input type="time" value={reminderTime} onChange={(e) => setReminderTime(e.target.value)}
                   className="mt-1.5 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-amber-50 focus:outline-none focus:border-amber-500/50" />
               </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={important} onChange={(e) => setImportant(e.target.checked)} className="accent-amber-500 w-4 h-4" />
+                <Icon name="star" className="w-4 h-4" fill={important ? '#fbbf24' : 'none'} strokeWidth={important ? 0 : 2} />
+                <span className="font-bold uppercase tracking-wider text-[10px] text-amber-300/80">{t.importantHabit}</span>
+              </label>
             </>
           )}
 
@@ -2146,7 +3089,7 @@ function AddModal({ t, type, onSave, onClose }) {
 }
 
 // ============ SETTINGS MODAL ============
-function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestImport, notifPermission, onRequestNotif }) {
+function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestImport, onLoadSample, notifPermission, onRequestNotif }) {
   const fileRef = useRef(null);
 
   const set = (k, v) => setSettings(s => ({ ...s, [k]: v }));
@@ -2263,6 +3206,28 @@ function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestI
                 </div>
               </div>
 
+              <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                      <Icon name="clock" className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-amber-100 text-sm">{t.backfillDays}</p>
+                      <p className="text-xs text-amber-200/50">{t.backfillDaysDesc}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-2 grid grid-cols-4 gap-2">
+                  {[0, 3, 7, 14].map(d => (
+                    <button key={d} onClick={() => set('backfillDays', d)}
+                      className={`py-2 rounded-lg border font-bold text-sm transition-all ${settings.backfillDays === d ? 'border-amber-500/60 bg-amber-500/10 text-amber-200' : 'border-white/5 bg-white/[0.02] text-amber-200/40'}`}>
+                      {d === 0 ? t.backfillOff : d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <ToggleRow icon="archive" label={t.autoArchive} value={settings.autoArchive} onChange={v => set('autoArchive', v)} desc={t.autoArchiveDesc} />
               {settings.autoArchive && (
                 <div className="ml-6">
@@ -2309,6 +3274,17 @@ function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestI
             </button>
             <input ref={fileRef} type="file" accept="application/json" className="hidden"
               onChange={(e) => { if (e.target.files[0]) { onRequestImport(e.target.files[0]); e.target.value = ''; }}} />
+
+            {onLoadSample && (
+              <button onClick={onLoadSample}
+                className="w-full flex items-center gap-3 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] text-left transition-all">
+                <Icon name="sparkles" className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-amber-100">{t.loadSampleData}</p>
+                  <p className="text-xs text-amber-200/50">{t.sampleDataDesc}</p>
+                </div>
+              </button>
+            )}
           </SettingsSection>
         </div>
       </div>

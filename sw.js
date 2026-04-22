@@ -1,4 +1,4 @@
-const CACHE_NAME = 'progress-tracker-v4';
+const CACHE_NAME = 'progress-tracker-v13';
 const urlsToCache = [
   './',
   './index.html',
