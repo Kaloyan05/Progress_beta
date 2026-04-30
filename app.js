@@ -42,7 +42,10 @@ const Icon = ({ name, className = "w-5 h-5", strokeWidth = 2, fill = "none" }) =
     search: <><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></>,
     lightbulb: <><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.4.3.7.7.9 1.1.2.4.1.9.1 1.2h6c0-.3-.1-.8.1-1.2.2-.4.5-.8.9-1.1A7 7 0 0 0 12 2z"/></>,
     star: <><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></>,
-    info: <><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></>
+    info: <><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></>,
+    // т.2.11: link/chain icon used to mark habit-stack relationships in HabitsView
+    // and in the toast that follows a parent-habit completion.
+    chain: <><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></>
   };
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -61,20 +64,39 @@ const T = {
     streakChampions: 'Streak шампиони', tasksToday: 'Задачи днес', noTasksToday: 'Няма задачи за днес 🎉', bestStreak: 'Най-дълга',
     openTasksLabel: 'Отворени задачи',
     completedToday: 'Днес', days: 'дни', day: 'ден', done: 'Готово', ofTotal: 'от',
-    progress: 'Прогрес', deadline: 'Краен срок', subtasks: 'Подзадачи', addSubtask: 'Добави подзадача',
+    progress: 'Прогрес', deadline: 'Краен срок', subtasks: 'Подстъпки', addSubtask: 'Добави подстъпка',
+    milestonesHint: 'Разбий целта на стъпки — прогресът се изчислява автоматично.',
+    milestonesAuto: 'изчислен', milestonesCompleted: 'завършени',
     name: 'Име', category: 'Категория', target: 'Цел (дни серия)', targetOptional: 'Цел (дни серия) — опционално', noTarget: 'Без цел', noDeadline: 'Без дата',
     save: 'Запази', cancel: 'Отказ', delete: 'Изтрий', confirm: 'Потвърди',
     noHabits: 'Все още няма навици. Добави първия си!', noGoals: 'Няма цели. Започни сега!', noTasks: 'Няма задачи. Добави първата!',
     searchPlaceholder: 'Търси…', noMatches: 'Няма съвпадения',
     priority: 'Приоритет', high: 'Висок', medium: 'Среден', low: 'Нисък',
     overdue: 'Просрочено', today: 'днес', tomorrow: 'утре', daysLeft: 'дни',
+    paceExpected: 'Трябва', paceYouAre: 'на', paceOnTrack: 'по график', paceBehind: 'изоставаш', paceAhead: 'преднина',
+    paceOverdue: 'след срока', paceNoDeadline: 'Задай дедлайн, за да видиш темпо',
+    goalStarted: 'Начало', editDeadline: 'Дедлайн', clearDeadline: 'Махни дедлайна',
     weekActivity: 'Седмица', categoryBreakdown: 'По категории',
+    // т.2.10 sub-5: Stats разрез по таг — нова секция след „По категории".
+    // OR-логика: елемент с няколко тага се брои във всеки от тях.
+    // `tagBreakdownEmpty` се показва, когато има дефинирани тагове, но
+    // нито един активен елемент не ги използва.
+    tagBreakdown: 'По тагове', tagBreakdownEmpty: 'Все още няма елементи с тагове.',
     totalHabits: 'Навици', totalGoals: 'Цели', totalTasks: 'Задачи', avgProgress: 'среден',
     streakBadge: 'СЕРИЯ', motivationTitle: 'Мисъл за деня', open: 'отворени',
     reminder: 'Напомняне', reminderTime: 'Час за напомняне', noReminder: 'Без напомняне',
     notes: 'Бележки', addNote: 'Добави бележка...',
-    settings: 'Настройки', exportData: 'Експортирай данни', importData: 'Импортирай данни',
+    journal: 'Журнал', addJournalEntry: 'Добави запис', journalPlaceholder: 'Какво постигна днес?',
+    noJournalEntries: 'Още няма записи. Отбелязвай прогреса си тук.',
+    deleteEntry: 'Изтрий записа',
+    settings: 'Настройки', exportData: 'Свали бекъп', importData: 'Зареди от файл',
+    backupDesc: 'Свали JSON файл с всички навици, цели, задачи и настройки.',
+    restoreDesc: 'Презапиши текущите данни с такива от предишен бекъп.',
     importSuccess: 'Данните са заредени!', importError: 'Грешка при импортиране',
+    importInvalidFile: 'Невалиден файл — не е JSON или липсват habits/goals/tasks.',
+    importBadVersion: 'Несъвместима версия на бекъпа.',
+    importTooLarge: 'Файлът е твърде голям (>10 MB).',
+    backupSummary: (h, g, ta) => `Файлът съдържа: ${h} навика · ${g} цели · ${ta} задачи.`,
     brokenStreak: 'Серията е прекъсната', currentMonth: 'Текущ месец',
     numericGoal: 'Числова цел', currentValue: 'Текуща стойност', targetValue: 'Целева стойност', unit: 'Мерна единица',
     enableNotifications: 'Разреши известия', notifDenied: 'Известията са забранени в браузъра',
@@ -94,8 +116,8 @@ const T = {
     none: 'Няма', on: 'Вкл.', off: 'Изкл.',
     themeFire: 'Огън', themeOcean: 'Океан', themeForest: 'Гора', themePurple: 'Лилаво', themeMinimal: 'Минимал',
     confirmDeleteTitle: 'Сигурен ли си?', confirmDeleteHabit: 'Навикът ще бъде изтрит заедно с цялата история на серията.',
-    confirmDeleteGoal: 'Целта ще бъде изтрита заедно с подзадачите.', confirmDeleteTask: 'Задачата ще бъде изтрита.',
-    confirmDeleteSubtask: 'Подзадачата ще бъде изтрита.',
+    confirmDeleteGoal: 'Целта ще бъде изтрита заедно с подстъпките.', confirmDeleteTask: 'Задачата ще бъде изтрита.',
+    confirmDeleteSubtask: 'Подстъпката ще бъде изтрита.',
     confirmImportTitle: 'Презапиши всички данни?', confirmImportBody: 'Текущите навици, цели и задачи ще бъдат заменени с тези от файла.',
     yesDelete: 'Да, изтрий', yesOverwrite: 'Да, презапиши',
     frozen: 'Пауза', freezeToday: 'Ден за пауза', streakProtected: 'Серия защитена', daysFrozen: 'дни пауза',
@@ -110,6 +132,70 @@ const T = {
     habitRestored: 'Навикът е възстановен', goalRestored: 'Целта е възстановена',
     noArchivedHabits: 'Няма архивирани навици', noArchivedGoals: 'Няма архивирани цели',
     important: 'Важен', importantHabit: 'Важен навик', markImportant: 'Отбележи като важен', unmarkImportant: 'Премахни важност',
+    // т.2.10: tags / категории — потребителски ктагове, паралелен слой над hard-coded category-тата.
+    tags: 'Категории', tagsDesc: 'Цветни тагове за гъвкаво групиране на навици, цели и задачи. Не заменят съществуващите категории.',
+    addTag: 'Добави', tagName: 'Име на категория', tagColor: 'Цвят',
+    noTagsYet: 'Все още няма категории. Добави първата.',
+    editTag: 'Редактирай', deleteTag: 'Изтрий',
+    confirmDeleteTagTitle: 'Изтрий категорията?',
+    confirmDeleteTagBody: (n) => n === 0
+      ? 'Категорията не е приложена към елементи. Безопасно за изтриване.'
+      : `Категорията ще бъде премахната от ${n} ${n === 1 ? 'елемент' : 'елемента'}.`,
+    // т.2.10 sub-3: chip-селектор в add/edit модала. `tagsLabel` е нов
+    // отделен ключ, защото `tags` вече се ползва за заглавие на секцията
+    // в Settings ("Категории"); тук искаме по-кратко "Тагове" под полето
+    // "Категория". `addFirstTag` е CTA-то за empty state, което води към
+    // Settings → Категории.
+    tagsLabel: 'Тагове', addFirstTag: 'Добави първа категория',
+    // т.2.10 sub-4: цветен филтър над листите. `tagFilterClear` е label-ът
+    // на × pill-а, който се появява при ≥1 активен филтър.
+    tagFilterClear: 'Изчисти филтъра',
+    // т.2.11: habit stacking — "след X прави Y". `stackedAfter` е label-ът на
+    // dropdown-а в add/edit модала; `standalone` е default опцията. `comesAfter`
+    // се рендерира в разгънатата карта като "идва след: <име>". Toast-ът след
+    // маркиране на родител използва `stackPromptTitle`/`stackPromptBody`/
+    // `stackPromptCheck`. `stackParentBadge`/`stackChildBadge` са pill-ите в
+    // metadata реда на картата (parent → "Стак: 2" / child → "идва след X").
+    stackedAfter: 'След кой навик?',
+    standalone: 'Самостоятелен',
+    comesAfter: 'Идва след',
+    stackPromptTitle: 'Стак навик',
+    stackPromptBody: (name) => `Готов ли си и с „${name}"?`,
+    stackPromptCheck: 'Отметни',
+    stackParentBadge: (n) => `Стак · ${n}`,
+    stackChildBadge: 'Стак',
+    // т.2.12: Седмичен преглед — модал с обобщение на изминалата седмица
+    // (отметки, най-силен ден, най-силен навик, разрез по таг, задържани
+    // стакове) + текстов размисъл, който се записва в weeklyReviews лога
+    // и се появява в Stats → "История на прегледите".
+    weeklyReviewCTA: 'Преглед на седмицата',
+    weeklyReviewCTASub: 'Обобщи как мина и запиши какво да промениш',
+    weeklyReviewTitle: 'Седмичен преглед',
+    weeklyReviewThisWeek: 'Тази седмица',
+    weeklyReviewLastWeek: 'Миналата седмица',
+    weeklyTicks: 'Отметки',
+    weeklyTicksSub: (n) => `${n} ${n === 1 ? 'навик' : 'навика'} активни`,
+    weeklyStrongestDay: 'Най-силен ден',
+    weeklyStrongestDayNone: 'Все още няма',
+    weeklyTopHabit: 'Най-силен навик',
+    weeklyTopHabitNone: '—',
+    weeklyTagBreakdownTitle: 'Отметки по таг',
+    weeklyTagBreakdownEmpty: 'Тази седмица няма отметки с тагове.',
+    weeklyStacksHeld: 'Задържани стакове',
+    weeklyStacksHeldDesc: (n) => `Двойки, направени всеки от ${n} ${n === 1 ? 'завършен ден' : 'завършени дни'}.`,
+    weeklyStacksHeldEmpty: 'Все още няма задържани стакове за тази седмица.',
+    weeklyReflection: 'Размисъл',
+    weeklyReflectionPlaceholder: 'Какво научи? Какво ще промениш следващата седмица?',
+    weeklyReviewSaveBtn: 'Запази прегледа',
+    weeklyReviewSavedToast: 'Прегледът е запазен',
+    weeklyReviewExisting: 'Този преглед вече е запазен. Запази отново, за да го обновиш.',
+    weeklyEligibleDays: (n) => `${n} ${n === 1 ? 'завършен ден' : 'завършени дни'} от 7`,
+    weeklyReviewsHistory: 'Седмични прегледи',
+    weeklyReviewsEmpty: 'Все още няма запазени седмични прегледи.',
+    weeklyReviewItemSummary: (ticks) => `${ticks} ${ticks === 1 ? 'отметка' : 'отметки'}`,
+    confirmDeleteWeeklyReviewTitle: 'Изтрий прегледа?',
+    confirmDeleteWeeklyReviewBody: 'Седмичният преглед ще бъде премахнат от историята.',
+    weeklyTicksLabel: 'отметки',
     welcomeTitle: 'Добре дошъл в ПРОГРЕС',
     welcomeBody: 'Проследявай навиците, целите и задачите си на едно място. Започни, като добавиш нещо свое или зареди пример, за да видиш как изглежда.',
     welcomeAddHabit: 'Добави първия си навик',
@@ -148,20 +234,37 @@ const T = {
     streakChampions: 'Streak Champions', tasksToday: "Today's Tasks", noTasksToday: 'No tasks today 🎉', bestStreak: 'Longest',
     openTasksLabel: 'Open tasks',
     completedToday: 'Today', days: 'days', day: 'day', done: 'Done', ofTotal: 'of',
-    progress: 'Progress', deadline: 'Deadline', subtasks: 'Subtasks', addSubtask: 'Add subtask',
+    progress: 'Progress', deadline: 'Deadline', subtasks: 'Milestones', addSubtask: 'Add milestone',
+    milestonesHint: 'Break the goal into steps — progress is computed automatically.',
+    milestonesAuto: 'auto', milestonesCompleted: 'done',
     name: 'Name', category: 'Category', target: 'Target (streak days)', targetOptional: 'Target (streak days) — optional', noTarget: 'No target', noDeadline: 'No date',
     save: 'Save', cancel: 'Cancel', delete: 'Delete', confirm: 'Confirm',
     noHabits: 'No habits yet. Add your first!', noGoals: 'No goals yet. Start now!', noTasks: 'No tasks yet. Add your first!',
     searchPlaceholder: 'Search…', noMatches: 'No matches',
     priority: 'Priority', high: 'High', medium: 'Medium', low: 'Low',
     overdue: 'Overdue', today: 'today', tomorrow: 'tomorrow', daysLeft: 'days',
+    paceExpected: 'Expected', paceYouAre: 'at', paceOnTrack: 'on track', paceBehind: 'behind by', paceAhead: 'ahead by',
+    paceOverdue: 'past deadline', paceNoDeadline: 'Set a deadline to see pace',
+    goalStarted: 'Started', editDeadline: 'Deadline', clearDeadline: 'Clear deadline',
     weekActivity: 'This week', categoryBreakdown: 'By category',
+    // т.2.10 sub-5: tag breakdown section in Stats. OR semantics —
+    // an item with multiple tags counts in each.
+    tagBreakdown: 'By tag', tagBreakdownEmpty: 'No items have tags yet.',
     totalHabits: 'Habits', totalGoals: 'Goals', totalTasks: 'Tasks', avgProgress: 'avg',
     streakBadge: 'STREAK', motivationTitle: 'Thought of the day', open: 'open',
     reminder: 'Reminder', reminderTime: 'Reminder time', noReminder: 'No reminder',
     notes: 'Notes', addNote: 'Add note...',
-    settings: 'Settings', exportData: 'Export data', importData: 'Import data',
+    journal: 'Journal', addJournalEntry: 'Add entry', journalPlaceholder: 'What did you accomplish?',
+    noJournalEntries: 'No entries yet. Log your progress here.',
+    deleteEntry: 'Delete entry',
+    settings: 'Settings', exportData: 'Download backup', importData: 'Load from file',
+    backupDesc: 'Download a JSON file with all habits, goals, tasks and settings.',
+    restoreDesc: 'Overwrite current data with a previous backup.',
     importSuccess: 'Data imported!', importError: 'Import error',
+    importInvalidFile: 'Invalid file — not JSON or missing habits/goals/tasks.',
+    importBadVersion: 'Incompatible backup version.',
+    importTooLarge: 'File is too large (>10 MB).',
+    backupSummary: (h, g, ta) => `Backup contains: ${h} habits · ${g} goals · ${ta} tasks.`,
     brokenStreak: 'Streak broken', currentMonth: 'Current month',
     numericGoal: 'Numeric goal', currentValue: 'Current value', targetValue: 'Target value', unit: 'Unit',
     enableNotifications: 'Enable notifications', notifDenied: 'Notifications blocked in browser',
@@ -180,8 +283,8 @@ const T = {
     none: 'None', on: 'On', off: 'Off',
     themeFire: 'Fire', themeOcean: 'Ocean', themeForest: 'Forest', themePurple: 'Purple', themeMinimal: 'Minimal',
     confirmDeleteTitle: 'Are you sure?', confirmDeleteHabit: 'The habit and all its streak history will be deleted.',
-    confirmDeleteGoal: 'The goal and its subtasks will be deleted.', confirmDeleteTask: 'The task will be deleted.',
-    confirmDeleteSubtask: 'The subtask will be deleted.',
+    confirmDeleteGoal: 'The goal and its milestones will be deleted.', confirmDeleteTask: 'The task will be deleted.',
+    confirmDeleteSubtask: 'The milestone will be deleted.',
     confirmImportTitle: 'Overwrite all data?', confirmImportBody: 'Current habits, goals and tasks will be replaced with the ones in the file.',
     yesDelete: 'Yes, delete', yesOverwrite: 'Yes, overwrite',
     frozen: 'Frozen', freezeToday: 'Freeze day', streakProtected: 'Streak protected', daysFrozen: 'days frozen',
@@ -196,6 +299,60 @@ const T = {
     habitRestored: 'Habit restored', goalRestored: 'Goal restored',
     noArchivedHabits: 'No archived habits', noArchivedGoals: 'No archived goals',
     important: 'Important', importantHabit: 'Important habit', markImportant: 'Mark as important', unmarkImportant: 'Unmark important',
+    // т.2.10: tags — user-defined orthogonal layer over the legacy hard-coded categories.
+    tags: 'Tags', tagsDesc: 'Color tags for flexible grouping across habits, goals, and tasks. They do not replace the existing categories.',
+    addTag: 'Add', tagName: 'Tag name', tagColor: 'Color',
+    noTagsYet: 'No tags yet. Add the first one.',
+    editTag: 'Edit', deleteTag: 'Delete',
+    confirmDeleteTagTitle: 'Delete tag?',
+    confirmDeleteTagBody: (n) => n === 0
+      ? 'This tag is not applied to any items. Safe to delete.'
+      : `The tag will be removed from ${n} item${n === 1 ? '' : 's'}.`,
+    // т.2.10 sub-3: chip selector strings — separate `tagsLabel` from the
+    // section title (`tags`) used in Settings.
+    tagsLabel: 'Tags', addFirstTag: 'Add first tag',
+    // т.2.10 sub-4: tag filter row above the lists.
+    tagFilterClear: 'Clear filter',
+    // т.2.11: habit stacking — "after X do Y".
+    stackedAfter: 'After which habit?',
+    standalone: 'Standalone',
+    comesAfter: 'Comes after',
+    stackPromptTitle: 'Stacked habit',
+    stackPromptBody: (name) => `Ready for "${name}" too?`,
+    stackPromptCheck: 'Check',
+    stackParentBadge: (n) => `Stack · ${n}`,
+    stackChildBadge: 'Stack',
+    // т.2.12: Weekly review — recap modal of the last 7 days. Stats are computed
+    // on open; the user adds a reflection and saves into the weeklyReviews log,
+    // which is then surfaced in Stats → "Weekly reviews".
+    weeklyReviewCTA: 'Review the week',
+    weeklyReviewCTASub: 'Recap how it went and write what to change',
+    weeklyReviewTitle: 'Weekly review',
+    weeklyReviewThisWeek: 'This week',
+    weeklyReviewLastWeek: 'Last week',
+    weeklyTicks: 'Ticks',
+    weeklyTicksSub: (n) => `${n} active ${n === 1 ? 'habit' : 'habits'}`,
+    weeklyStrongestDay: 'Strongest day',
+    weeklyStrongestDayNone: 'None yet',
+    weeklyTopHabit: 'Top habit',
+    weeklyTopHabitNone: '—',
+    weeklyTagBreakdownTitle: 'Ticks by tag',
+    weeklyTagBreakdownEmpty: 'No tagged ticks this week.',
+    weeklyStacksHeld: 'Stacks held',
+    weeklyStacksHeldDesc: (n) => `Pairs done on every ${n === 1 ? 'one of the completed day' : `${n} completed days`}.`,
+    weeklyStacksHeldEmpty: 'No stacks held this week yet.',
+    weeklyReflection: 'Reflection',
+    weeklyReflectionPlaceholder: 'What did you learn? What will you change next week?',
+    weeklyReviewSaveBtn: 'Save review',
+    weeklyReviewSavedToast: 'Review saved',
+    weeklyReviewExisting: 'A review for this week already exists. Saving again will overwrite it.',
+    weeklyEligibleDays: (n) => `${n} of 7 ${n === 1 ? 'day' : 'days'} completed`,
+    weeklyReviewsHistory: 'Weekly reviews',
+    weeklyReviewsEmpty: 'No weekly reviews saved yet.',
+    weeklyReviewItemSummary: (ticks) => `${ticks} ${ticks === 1 ? 'tick' : 'ticks'}`,
+    confirmDeleteWeeklyReviewTitle: 'Delete review?',
+    confirmDeleteWeeklyReviewBody: 'The weekly review will be removed from history.',
+    weeklyTicksLabel: 'ticks',
     welcomeTitle: 'Welcome to PROGRESS',
     welcomeBody: 'Track your habits, goals, and tasks in one place. To get started, add something of your own — or load the sample data to see how a filled-in tracker looks.',
     welcomeAddHabit: 'Add your first habit',
@@ -263,13 +420,19 @@ const storage = {
 
 // Migrate older data shapes into current schema.
 function migrateData(raw) {
-  const empty = { habits: [], goals: [], tasks: [], version: SCHEMA_VERSION };
+  const empty = { habits: [], goals: [], tasks: [], tags: [], weeklyReviews: [], version: SCHEMA_VERSION };
   if (!raw || typeof raw !== 'object') return empty;
   const v = raw.version || 1;
   const out = {
     habits: Array.isArray(raw.habits) ? raw.habits : [],
     goals:  Array.isArray(raw.goals)  ? raw.goals  : [],
     tasks:  Array.isArray(raw.tasks)  ? raw.tasks  : [],
+    // т.2.10: tags are a brand-new envelope field. Backward-compat default
+    // is an empty array — pre-v18 stores simply don't have this key yet.
+    tags:   Array.isArray(raw.tags)   ? raw.tags   : [],
+    // т.2.12: weeklyReviews is the new append/replace log of saved weekly
+    // recaps. Backward-compat default is []; pre-v23 stores never had it.
+    weeklyReviews: Array.isArray(raw.weeklyReviews) ? raw.weeklyReviews : [],
     version: SCHEMA_VERSION
   };
   if (v < 2) {
@@ -287,7 +450,48 @@ function migrateData(raw) {
   // pre-v11 stores that simply don't have the field yet (т.2.6).
   out.habits = out.habits.map(h => ({ archived: false, archivedAt: null, ...h }));
   out.goals  = out.goals.map(g  => ({ archived: false, archivedAt: null, ...g  }));
+  // т.3.1: ensure createdAt on every goal — fall back to id (ids are Date.now() millis).
+  out.goals = out.goals.map(g => g.createdAt
+    ? g
+    : { ...g, createdAt: typeof g.id === 'number' ? new Date(g.id).toISOString() : new Date().toISOString() });
+  // т.3.2: ensure journal array on every goal — backward-compatible for pre-v15 stores.
+  out.goals = out.goals.map(g => Array.isArray(g.journal) ? g : { ...g, journal: [] });
+  // т.2.10: ensure tagIds:[] on every habit/goal/task — backward-compatible
+  // for pre-v18 stores. Tags are a new orthogonal layer over the legacy
+  // hard-coded `category` field, NOT a replacement for it.
+  out.habits = out.habits.map(h => Array.isArray(h.tagIds) ? h : { ...h, tagIds: [] });
+  out.goals  = out.goals.map(g  => Array.isArray(g.tagIds) ? g : { ...g, tagIds: [] });
+  out.tasks  = out.tasks.map(ta => Array.isArray(ta.tagIds) ? ta : { ...ta, tagIds: [] });
+  // т.2.11: habit stacking — every habit gets `stackedAfter: null` by default.
+  // The field stores the parent habit's id (or null for "standalone"). Existing
+  // pre-v22 stores simply don't have this key yet, so we add it idempotently
+  // — items that already have a non-undefined stackedAfter are not rewritten.
+  out.habits = out.habits.map(h => 'stackedAfter' in h ? h : { ...h, stackedAfter: null });
   return out;
+}
+
+// Validate a parsed backup envelope before we let it overwrite live state (т.2.9).
+// Accepts both v2 (legacy export sans envelope version, before v17) and v3 (current
+// export with `version: 3` field). Returns `{ ok, reason }` on failure or
+// `{ ok: true, counts: { habits, goals, tasks } }` on success.
+function validateBackup(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ok: false, reason: 'shape' };
+  if (!Array.isArray(raw.habits) || !Array.isArray(raw.goals) || !Array.isArray(raw.tasks)) {
+    return { ok: false, reason: 'shape' };
+  }
+  // Envelope `version` is optional for backward-compat; if present, must be a known one.
+  // 2 = pre-v17 internal store schema; 3 = backup envelope shipped from v17 onwards.
+  if (raw.version != null && raw.version !== 2 && raw.version !== 3) {
+    return { ok: false, reason: 'version' };
+  }
+  return {
+    ok: true,
+    counts: {
+      habits: raw.habits.length,
+      goals: raw.goals.length,
+      tasks: raw.tasks.length
+    }
+  };
 }
 
 // Debounced effect — writes happen 200ms after the last change.
@@ -317,6 +521,22 @@ const CATEGORY_META = {
   personal: { color: '#f59e0b', emoji: '✨' },
   finance:  { color: '#f43f5e', emoji: '💰' }
 };
+
+// т.2.10: Predefined color palette for user-defined tags. The hard-coded
+// CATEGORY_META above stays as-is — tags are a NEW additive layer over it,
+// not a replacement. 10 swatches chosen to be visually distinct on dark bg.
+const TAG_COLORS = [
+  '#f43f5e', // rose
+  '#f97316', // orange
+  '#f59e0b', // amber
+  '#eab308', // yellow
+  '#10b981', // emerald
+  '#14b8a6', // teal
+  '#0ea5e9', // sky
+  '#6366f1', // indigo
+  '#a855f7', // violet
+  '#ec4899'  // pink
+];
 
 const PRIORITY_COLORS = {
   high:   { bg: 'bg-rose-500/15',  text: 'text-rose-400',  border: 'border-rose-500/30' },
@@ -521,6 +741,183 @@ const calculateFreezeUsed = (completions, freezeDays = 0) => {
   return used;
 };
 
+// т.2.11: cycle detection for habit stacking.
+// Returns true if assigning `parentId` as the parent of `childId` would
+// create a cycle (A→B and B→A, longer chains, or self-stack). Walks the
+// parent chain from `parentId` upwards via `stackedAfter`; a cycle exists
+// iff we ever revisit `childId`. Hard cap on iterations as defense against
+// pre-existing corrupt data.
+const wouldCreateStackCycle = (habits, childId, parentId) => {
+  if (parentId == null) return false;
+  if (parentId === childId) return true;
+  const byId = new Map(habits.map(h => [h.id, h]));
+  let current = byId.get(parentId);
+  for (let i = 0; i < 256 && current; i++) {
+    if (current.id === childId) return true;
+    if (current.stackedAfter == null) return false;
+    current = byId.get(current.stackedAfter);
+  }
+  return false;
+};
+
+// Returns the list of habits eligible to be the parent of `childId` —
+// excludes the child itself, archived habits, and any habit that would
+// create a cycle. Used by the dropdown in AddModal/HabitsView edit panel.
+const getEligibleStackParents = (habits, childId) => {
+  return habits.filter(h => !h.archived
+    && h.id !== childId
+    && !wouldCreateStackCycle(habits, childId, h.id));
+};
+
+// т.2.12: weekly review helpers.
+// `weekRangeForOffset(now, weekStart, offset)` returns the [start, end] Date
+// pair for the week containing `now` shifted by `offset` (0 = current,
+// -1 = previous, etc.). Start is normalized to 00:00:00 local; end is
+// 23:59:59.999 of the 6th day. `weekStart` follows DEFAULT_SETTINGS:
+// 1 = Monday-anchored, 0 = Sunday-anchored.
+const weekRangeForOffset = (now, weekStart, offset = 0) => {
+  const ref = new Date(now);
+  ref.setHours(0, 0, 0, 0);
+  // dow: 0=Sun..6=Sat. Shift so Monday=0 when weekStart=1; Sunday=0 when weekStart=0.
+  const dow = ref.getDay();
+  const back = weekStart === 1 ? (dow === 0 ? 6 : dow - 1) : dow;
+  const start = new Date(ref);
+  start.setDate(start.getDate() - back + offset * 7);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return { start, end };
+};
+
+// Shapes the 7-day window for the modal: returns an array of {date, key} for
+// each day in the week, plus eligibility (date <= today). Used both to
+// compute stats and to know which days are "completed" so we don't count
+// future days when reviewing the current week.
+const buildWeekDays = (start, end, now = new Date()) => {
+  const today = new Date(now);
+  today.setHours(23, 59, 59, 999);
+  const days = [];
+  const d = new Date(start);
+  d.setHours(0, 0, 0, 0);
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(d);
+    days.push({
+      date: day,
+      key: day.toDateString(),
+      eligible: day.getTime() <= today.getTime()
+    });
+    d.setDate(d.getDate() + 1);
+  }
+  return days;
+};
+
+// Compute everything the WeeklyReviewModal renders for a given week.
+// - totalTicks: completions across all active habits in the 7-day window
+// - bestDay: { key, date, count } with the highest completion count (any of the
+//   7 days, eligible or not — when eligible-only, pick from those)
+// - topHabit: { id, name, count, important } with the most ticks; null if 0
+// - tagCounts: { tagId: number } — habit ticks attributed to each tag (OR
+//   semantics — a habit with multiple tags contributes its weekly ticks to
+//   each tag)
+// - stacksHeld: [{ childId, parentId, childName, parentName }] — child + parent
+//   both completed on every eligible day (and at least 1 eligible day)
+// - eligibleDayCount: number of eligible days in the window
+// - activeHabitsCount: passed back for the "X navika aktivni" subtitle
+const computeWeeklyStats = (habits, tags, start, end, now = new Date()) => {
+  const days = buildWeekDays(start, end, now);
+  const weekKeys = new Set(days.map(d => d.key));
+  const eligibleDays = days.filter(d => d.eligible);
+  // Active habits only — archived items shouldn't pollute the recap.
+  const active = (habits || []).filter(h => !h.archived);
+  // Per-day counts (sum across all active habits).
+  const dayCounts = days.map(({ key, date, eligible }) => {
+    const count = active.reduce((sum, h) => sum + ((h.completions || []).includes(key) ? 1 : 0), 0);
+    return { key, date, count, eligible };
+  });
+  let totalTicks = 0;
+  dayCounts.forEach(d => { totalTicks += d.count; });
+  // Best day — pick from eligible days first; if none eligible, leave null.
+  let bestDay = null;
+  dayCounts.forEach(d => {
+    if (!d.eligible) return;
+    if (!bestDay || d.count > bestDay.count) bestDay = d;
+  });
+  // Per-habit weekly tick count (any completion that lands in the 7-day window).
+  const perHabit = active.map(h => {
+    const count = (h.completions || []).reduce((sum, c) => sum + (weekKeys.has(c) ? 1 : 0), 0);
+    return { habit: h, count };
+  });
+  // Top habit — must have ≥1 ticks; tie-break by first-encountered (sort stable).
+  let topHabit = null;
+  perHabit.forEach(({ habit, count }) => {
+    if (count > 0 && (!topHabit || count > topHabit.count)) {
+      topHabit = { id: habit.id, name: habit.name, count, important: !!habit.important };
+    }
+  });
+  // Tag breakdown — sum each habit's weekly ticks into every tag it carries.
+  const tagCounts = {};
+  perHabit.forEach(({ habit, count }) => {
+    if (count <= 0) return;
+    (habit.tagIds || []).forEach(tid => {
+      tagCounts[tid] = (tagCounts[tid] || 0) + count;
+    });
+  });
+  // Stacks held — for every child that points to a still-active parent, the
+  // pair is "held" iff BOTH habits are completed on every eligible day. If
+  // there are no eligible days yet (e.g. the week hasn't started) we skip.
+  const stacksHeld = [];
+  if (eligibleDays.length > 0) {
+    const byId = new Map(active.map(h => [h.id, h]));
+    active.forEach(child => {
+      if (child.stackedAfter == null) return;
+      const parent = byId.get(child.stackedAfter);
+      if (!parent) return;
+      const allHeld = eligibleDays.every(d =>
+        (child.completions || []).includes(d.key) &&
+        (parent.completions || []).includes(d.key));
+      if (allHeld) {
+        stacksHeld.push({
+          childId: child.id, childName: child.name,
+          parentId: parent.id, parentName: parent.name
+        });
+      }
+    });
+  }
+  return {
+    days: dayCounts,
+    eligibleDayCount: eligibleDays.length,
+    totalTicks,
+    bestDay,
+    topHabit,
+    tagCounts,
+    stacksHeld,
+    activeHabitsCount: active.length
+  };
+};
+
+// Format a YYYY-MM-DD ISO date string for display in the weekly review header.
+// "1–7 април 2026" / "Apr 1 – 7, 2026" — same month collapses to one label.
+const formatWeekRange = (start, end, lang) => {
+  const fmtDay = (d) => d.toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US', { day: 'numeric' });
+  const fmtMonth = (d) => d.toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US', { month: 'short' });
+  const fmtYear = (d) => d.getFullYear();
+  if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+    return lang === 'bg'
+      ? `${fmtDay(start)}–${fmtDay(end)} ${fmtMonth(end)} ${fmtYear(end)}`
+      : `${fmtMonth(start)} ${fmtDay(start)}–${fmtDay(end)}, ${fmtYear(end)}`;
+  }
+  return lang === 'bg'
+    ? `${fmtDay(start)} ${fmtMonth(start)} – ${fmtDay(end)} ${fmtMonth(end)} ${fmtYear(end)}`
+    : `${fmtMonth(start)} ${fmtDay(start)} – ${fmtMonth(end)} ${fmtDay(end)}, ${fmtYear(end)}`;
+};
+
+// YYYY-MM-DD key from a Date — used to identify a week by its start date.
+const isoDateKey = (d) => {
+  const dt = new Date(d);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+};
+
 const isTaskArchivable = (task, archiveDays) => {
   if (!task.done || !task.completedAt) return false;
   const age = (Date.now() - new Date(task.completedAt).getTime()) / 86400000;
@@ -689,7 +1086,7 @@ function ConfirmModal({ t, title, body, confirmLabel, tone = 'danger', onConfirm
           </div>
           <div className="flex-1 pt-1">
             <h3 id="confirm-title" className="text-lg font-black text-amber-100" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>{title}</h3>
-            <p className="text-sm text-amber-200/70 mt-1 leading-relaxed">{body}</p>
+            <p className="text-sm text-amber-200/70 mt-1 leading-relaxed" style={{ whiteSpace: 'pre-line' }}>{body}</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -750,6 +1147,67 @@ function UndoToast({ label, onUndo, onDismiss, lang }) {
           boxShadow: '0 2px 12px var(--theme-glow)'
         }}>
         {lang === 'bg' ? 'Върни' : 'Undo'}
+      </button>
+    </div>
+  );
+}
+
+// ============ STACK PROMPT TOAST (т.2.11) ============
+// Shown for ~6s after the user marks a parent habit done today and there is a
+// not-yet-done stack child for today. Tapping "Отметни" calls onAccept(childId)
+// and dismisses; the × button just dismisses. Auto-hides after the timer.
+function StackPromptToast({ t, childName, onAccept, onDismiss }) {
+  // Keep latest dismiss in a ref so the auto-dismiss timer is set ONCE on mount
+  // and isn't reset by App re-renders that recreate the onDismiss closure.
+  const dismissRef = useRef(onDismiss);
+  useEffect(() => { dismissRef.current = onDismiss; }, [onDismiss]);
+  useEffect(() => {
+    const timer = setTimeout(() => dismissRef.current(), 6000);
+    const onKey = (e) => { if (e.key === 'Escape') dismissRef.current(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', onKey);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const body = typeof t.stackPromptBody === 'function' ? t.stackPromptBody(childName) : '';
+
+  return (
+    <div role="status" aria-live="polite"
+      className="fixed left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-2xl max-w-sm w-[90%]"
+      style={{
+        bottom: 'max(5.5rem, calc(env(safe-area-inset-bottom) + 5.5rem))',
+        background: 'linear-gradient(180deg, rgba(20,14,10,0.98), rgba(10,6,4,0.98))',
+        borderColor: 'var(--theme-primary)',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.6), 0 0 20px var(--theme-glow-soft)',
+        animation: 'slideUp 0.25s ease',
+      }}>
+      <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center"
+           style={{ background: 'var(--theme-primary)', opacity: 0.2 }}>
+        <Icon name="chain" className="w-4 h-4" style={{ color: 'var(--theme-primary-light)' }} strokeWidth={2.5} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-[10px] text-amber-200/60 font-bold uppercase tracking-wider">
+          {t.stackPromptTitle}
+        </div>
+        <div className="text-sm text-amber-100 font-semibold truncate">{body}</div>
+      </div>
+      <button onClick={onAccept}
+        aria-label={t.stackPromptCheck}
+        className="px-3 py-2 rounded-xl font-black text-sm active:scale-95 transition-transform flex-shrink-0"
+        style={{
+          background: 'linear-gradient(135deg, var(--theme-primary), var(--theme-primary-dark))',
+          color: '#000',
+          boxShadow: '0 2px 12px var(--theme-glow)'
+        }}>
+        {t.stackPromptCheck}
+      </button>
+      <button onClick={onDismiss}
+        aria-label={t.cancel}
+        className="p-1.5 rounded-lg text-amber-200/50 hover:text-amber-200/80 flex-shrink-0">
+        <Icon name="x" className="w-4 h-4" />
       </button>
     </div>
   );
@@ -848,11 +1306,26 @@ function App() {
   const [habits, setHabits] = useState([]);
   const [goals, setGoals] = useState([]);
   const [tasks, setTasks] = useState([]);
+  // т.2.10: global tag list. Each tag is { id, name, color }. Items reference
+  // tags via their `tagIds: []` field — kept as IDs (not embedded objects) so
+  // a tag rename or color change updates everywhere without item-level edits.
+  const [tags, setTags] = useState([]);
+  // т.2.12: log of saved weekly reviews. Each entry: { id, weekStart (YYYY-MM-DD),
+  // weekEnd (YYYY-MM-DD), text, createdAt (ISO), stats { totalTicks, bestDayKey,
+  // bestDayCount, topHabitId, topHabitName, topHabitTicks, tagCounts {tagId:n},
+  // stacksHeld [{childId, parentId}], eligibleDays } }. One entry per weekStart —
+  // saving again replaces the previous entry for that week.
+  const [weeklyReviews, setWeeklyReviews] = useState([]);
+  // Local UI state — opens the WeeklyReviewModal from the Dashboard CTA.
+  const [showWeeklyReview, setShowWeeklyReview] = useState(false);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [modal, setModal] = useState(null);
   const [confirm, setConfirm] = useState(null); // { title, body, confirmLabel, onConfirm }
   const [undo, setUndo] = useState(null);        // { label, restore }
+  // т.2.11: queued stack-suggestion toast — { childId, childName }. Auto-dismisses
+  // after 6s; tapping "Отметни" toggles the child habit for today and dismisses.
+  const [stackPrompt, setStackPrompt] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [notifPermission, setNotifPermission] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'default');
   const [loaded, setLoaded] = useState(false);
@@ -871,6 +1344,8 @@ function App() {
       setHabits(data.habits);
       setGoals(data.goals);
       setTasks(data.tasks);
+      setTags(data.tags || []);
+      setWeeklyReviews(data.weeklyReviews || []);
       if (data.version !== (saved.version || 1)) {
         storage.save(STORAGE_KEY, { ...data });
       }
@@ -921,11 +1396,13 @@ function App() {
     dismissOnboarding();
   }, [lang, dismissOnboarding]);
 
-  // Save data — debounced so rapid edits batch into a single write
+  // Save data — debounced so rapid edits batch into a single write.
+  // т.2.10: `tags` is part of the persisted envelope alongside habits/goals/tasks.
+  // т.2.12: `weeklyReviews` is also persisted in the same envelope.
   useDebouncedEffect(() => {
     if (!loaded) return;
-    storage.save(STORAGE_KEY, { habits, goals, tasks, version: SCHEMA_VERSION });
-  }, [habits, goals, tasks, loaded], 200);
+    storage.save(STORAGE_KEY, { habits, goals, tasks, tags, weeklyReviews, version: SCHEMA_VERSION });
+  }, [habits, goals, tasks, tags, weeklyReviews, loaded], 200);
 
   useDebouncedEffect(() => {
     if (!loaded) return;
@@ -945,6 +1422,15 @@ function App() {
     window.addEventListener('storage-quota-exceeded', onQuota);
     return () => window.removeEventListener('storage-quota-exceeded', onQuota);
   }, [lang]);
+
+  // Data notice toast — used by the backup/import flow (т.2.9).
+  // tone: 'success' | 'error'. Auto-dismisses after 4s.
+  const [dataNotice, setDataNotice] = useState(null);
+  useEffect(() => {
+    if (!dataNotice) return;
+    const h = setTimeout(() => setDataNotice(null), 4000);
+    return () => clearTimeout(h);
+  }, [dataNotice]);
 
   // ===== Reminder system =====
   useEffect(() => {
@@ -1044,6 +1530,7 @@ function App() {
 
   const toggleHabit = (id, date = null) => {
     const targetDate = date || new Date().toDateString();
+    const todayKey = new Date().toDateString();
     let becameDone = false;
     setHabits(habits.map(h => {
       if (h.id !== id) return h;
@@ -1052,6 +1539,16 @@ function App() {
       return { ...h, completions: has ? h.completions.filter(d => d !== targetDate) : [...h.completions, targetDate] };
     }));
     if (becameDone) tick();
+    // т.2.11: when a parent habit is checked for today, surface a one-tap toast
+    // suggesting the first stack-child that's still open today. Only fires for
+    // today (backfilling a past day shouldn't pop suggestions in the present);
+    // archived children are skipped.
+    if (becameDone && targetDate === todayKey) {
+      const child = habits.find(h => h.stackedAfter === id
+        && !h.archived
+        && !h.completions.includes(todayKey));
+      if (child) setStackPrompt({ childId: child.id, childName: child.name });
+    }
   };
 
   const toggleTask = (id) => {
@@ -1082,9 +1579,11 @@ function App() {
 
   const addItem = (type, data) => {
     const id = Date.now();
-    if (type === 'habit') setHabits([...habits, { id, completions: [], target: null, notes: '', reminderTime: '', important: false, archived: false, archivedAt: null, ...data }]);
-    if (type === 'goal') setGoals([...goals, { id, progress: 0, subtasks: [], notes: '', numeric: null, archived: false, archivedAt: null, ...data }]);
-    if (type === 'task') setTasks([...tasks, { id, done: false, priority: 'medium', notes: '', reminderTime: '', completedAt: null, ...data }]);
+    // т.2.10: every new item starts with an empty `tagIds` array. Existing
+    // pre-v18 items get the same default via migrateData on load.
+    if (type === 'habit') setHabits([...habits, { id, completions: [], target: null, notes: '', reminderTime: '', important: false, archived: false, archivedAt: null, tagIds: [], stackedAfter: null, ...data }]);
+    if (type === 'goal') setGoals([...goals, { id, progress: 0, subtasks: [], notes: '', journal: [], numeric: null, archived: false, archivedAt: null, createdAt: new Date().toISOString(), tagIds: [], ...data }]);
+    if (type === 'task') setTasks([...tasks, { id, done: false, priority: 'medium', notes: '', reminderTime: '', completedAt: null, tagIds: [], ...data }]);
     setModal(null);
   };
 
@@ -1117,7 +1616,12 @@ function App() {
       confirmLabel: t.yesDelete,
       onConfirm: () => {
         const prev = habits;
-        setHabits(habits.filter(x => x.id !== id));
+        // т.2.11: also strip dangling stackedAfter on any child pointing to
+        // the deleted habit. Undo restores the whole `prev` array, so a
+        // restored parent comes back with its children's links intact.
+        setHabits(habits
+          .filter(x => x.id !== id)
+          .map(x => x.stackedAfter === id ? { ...x, stackedAfter: null } : x));
         showUndo(`${t.confirmDeleteHabit}: ${h.name}`, () => setHabits(prev));
       }
     });
@@ -1236,8 +1740,98 @@ function App() {
     setGoals(goals.map(g => g.id === goalId ? { ...g, subtasks: [...g.subtasks, { id: Date.now(), text, done: false }] } : g));
   };
 
+  // т.3.2: journal entries — append-only log of progress inside a goal.
+  // Date defaults to today but the user can backdate. Delete is allowed for typos
+  // (kept minimal — small × on hover, matching the subtask-row pattern).
+  const addGoalJournalEntry = (goalId, text, date) => {
+    const trimmed = (text || '').trim();
+    if (!trimmed) return;
+    const today = new Date().toISOString().slice(0, 10);
+    setGoals(goals.map(g => g.id === goalId
+      ? { ...g, journal: [{ id: Date.now(), date: date || today, text: trimmed }, ...(g.journal || [])] }
+      : g));
+  };
+  const deleteGoalJournalEntry = (goalId, entryId) => {
+    setGoals(goals.map(g => g.id === goalId
+      ? { ...g, journal: (g.journal || []).filter(e => e.id !== entryId) }
+      : g));
+  };
+
+  // === т.2.10: Tags CRUD ===
+  // Tags live in their own global list and are referenced by id from
+  // habits/goals/tasks. Renames/recolors propagate automatically because
+  // items only store the id. Deletes strip the id from every item.
+  const addTag = (name, color) => {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return;
+    const safeColor = TAG_COLORS.includes(color) ? color : TAG_COLORS[0];
+    setTags([...tags, { id: Date.now(), name: trimmed, color: safeColor }]);
+  };
+  const renameTag = (id, name, color) => {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return;
+    const safeColor = TAG_COLORS.includes(color) ? color : TAG_COLORS[0];
+    setTags(tags.map(x => x.id === id ? { ...x, name: trimmed, color: safeColor } : x));
+  };
+  // Delete asks for confirmation (per PLAN.md sub-2): the body shows how many
+  // items will lose this tag, and the action ALSO strips `tagIds` from every
+  // habit/goal/task so we never end up with orphan ids in storage.
+  const requestDeleteTag = (id) => {
+    const tag = tags.find(x => x.id === id);
+    if (!tag) return;
+    const inHabits = habits.filter(h => (h.tagIds || []).includes(id)).length;
+    const inGoals  = goals.filter(g => (g.tagIds || []).includes(id)).length;
+    const inTasks  = tasks.filter(ta => (ta.tagIds || []).includes(id)).length;
+    const n = inHabits + inGoals + inTasks;
+    setConfirm({
+      title: t.confirmDeleteTagTitle,
+      body: `"${tag.name}" — ${typeof t.confirmDeleteTagBody === 'function' ? t.confirmDeleteTagBody(n) : ''}`,
+      confirmLabel: t.yesDelete,
+      onConfirm: () => {
+        setHabits(habits.map(h => ({ ...h, tagIds: (h.tagIds || []).filter(tid => tid !== id) })));
+        setGoals(goals.map(g  => ({ ...g, tagIds: (g.tagIds || []).filter(tid => tid !== id) })));
+        setTasks(tasks.map(ta => ({ ...ta, tagIds: (ta.tagIds || []).filter(tid => tid !== id) })));
+        setTags(tags.filter(x => x.id !== id));
+      }
+    });
+  };
+
+  // === т.2.12: Weekly reviews CRUD ===
+  // One review per weekStart key (YYYY-MM-DD): saving when one already exists
+  // for the same week REPLACES it — the user can revise the reflection without
+  // accumulating duplicates. Stats are snapshotted at save time so the history
+  // stays meaningful even if habits/tags are later edited or removed.
+  const saveWeeklyReview = (review) => {
+    if (!review || !review.weekStart) return;
+    const without = weeklyReviews.filter(r => r.weekStart !== review.weekStart);
+    const entry = {
+      id: Date.now(),
+      weekStart: review.weekStart,
+      weekEnd: review.weekEnd,
+      text: (review.text || '').trim(),
+      createdAt: new Date().toISOString(),
+      stats: review.stats || {}
+    };
+    setWeeklyReviews([entry, ...without]);
+    setDataNotice({ tone: 'success', text: t.weeklyReviewSavedToast });
+  };
+  const requestDeleteWeeklyReview = (id) => {
+    const r = weeklyReviews.find(x => x.id === id);
+    if (!r) return;
+    setConfirm({
+      title: t.confirmDeleteWeeklyReviewTitle,
+      body: t.confirmDeleteWeeklyReviewBody,
+      confirmLabel: t.yesDelete,
+      onConfirm: () => {
+        const prev = weeklyReviews;
+        setWeeklyReviews(weeklyReviews.filter(x => x.id !== id));
+        showUndo(t.confirmDeleteWeeklyReviewBody, () => setWeeklyReviews(prev));
+      }
+    });
+  };
+
   const exportData = () => {
-    const data = { habits, goals, tasks, settings, exported: new Date().toISOString(), version: 3 };
+    const data = { habits, goals, tasks, tags, weeklyReviews, settings, exported: new Date().toISOString(), version: 3 };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1247,19 +1841,59 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  const importData = (file) => {
+  // Commit a validated, already-parsed backup into live state. Routed through
+  // `migrateData` so older shapes (missing `archived`, `journal`, `createdAt`,
+  // etc.) are coerced into the current schema before they hit React state.
+  const commitImport = (parsed) => {
+    const migrated = migrateData(parsed);
+    setHabits(migrated.habits);
+    setGoals(migrated.goals);
+    setTasks(migrated.tasks);
+    // т.2.10: tags also come through migrateData (defaults to [] if missing
+    // — older v17 backups won't have the field at all).
+    setTags(migrated.tags || []);
+    // т.2.12: weeklyReviews comes through migrateData (defaults to [] if
+    // missing — older v22 backups won't have the field at all).
+    setWeeklyReviews(migrated.weeklyReviews || []);
+    if (parsed.settings && typeof parsed.settings === 'object') {
+      setSettings({ ...DEFAULT_SETTINGS, ...parsed.settings });
+    }
+    setDataNotice({ tone: 'success', text: t.importSuccess });
+  };
+
+  // Read + parse + validate a backup file BEFORE asking the user to confirm
+  // overwrite. Invalid files surface a toast error and never reach the confirm
+  // modal — that way the user can't accidentally OK something that won't load.
+  const startImport = (file) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      setDataNotice({ tone: 'error', text: t.importTooLarge });
+      return;
+    }
     const reader = new FileReader();
+    reader.onerror = () => setDataNotice({ tone: 'error', text: t.importError });
     reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target.result);
-        if (data.habits) setHabits(data.habits);
-        if (data.goals) setGoals(data.goals);
-        if (data.tasks) setTasks(data.tasks);
-        if (data.settings) setSettings({ ...DEFAULT_SETTINGS, ...data.settings });
-        alert(t.importSuccess);
-      } catch {
-        alert(t.importError);
+      let parsed;
+      try { parsed = JSON.parse(e.target.result); }
+      catch { setDataNotice({ tone: 'error', text: t.importInvalidFile }); return; }
+      const v = validateBackup(parsed);
+      if (!v.ok) {
+        setDataNotice({
+          tone: 'error',
+          text: v.reason === 'version' ? t.importBadVersion : t.importInvalidFile
+        });
+        return;
       }
+      const summary = typeof t.backupSummary === 'function'
+        ? t.backupSummary(v.counts.habits, v.counts.goals, v.counts.tasks)
+        : '';
+      setConfirm({
+        title: t.confirmImportTitle,
+        body: `${t.confirmImportBody}${summary ? '\n\n' + summary : ''}`,
+        confirmLabel: t.yesOverwrite,
+        tone: 'warn',
+        onConfirm: () => { commitImport(parsed); setShowSettings(false); }
+      });
     };
     reader.readAsText(file);
   };
@@ -1366,12 +2000,12 @@ function App() {
               onAddTask={() => { dismissOnboarding(); setModal({ type: 'task' }); }}
               onLoadSample={loadSampleData}
               onSkip={dismissOnboarding} />
-          : <DashboardView t={t} stats={stats} habits={activeHabits} goals={activeGoals} tasks={visibleTasks} settings={settings} daysShort={daysShort} onUpdateNumeric={updateNumericGoal} onToggleTask={toggleTask} onSwipeDeleteTask={deleteTaskSwipe} tick={tick} lang={lang} />)}
-        {activeTab === 'habits' && <HabitsView t={t} habits={habits} settings={settings} archivedCount={archivedHabitCount} showArchivedItems={settings.showArchivedItems} onToggleShowArchived={() => setSettings(s => ({ ...s, showArchivedItems: !s.showArchivedItems }))} onToggle={toggleHabit} onDelete={requestDeleteHabit} onUpdate={(id, u) => updateItem('habit', id, u)} onArchive={archiveHabit} onUnarchive={unarchiveHabit} onAdd={() => setModal({ type: 'habit' })} lang={lang} />}
-        {activeTab === 'goals' && <GoalsView t={t} goals={goals} archivedCount={archivedGoalCount} showArchivedItems={settings.showArchivedItems} onToggleShowArchived={() => setSettings(s => ({ ...s, showArchivedItems: !s.showArchivedItems }))} onToggleSubtask={toggleSubtask} onDelete={requestDeleteGoal} onDeleteSubtask={requestDeleteSubtask} onUpdate={(id, u) => updateItem('goal', id, u)} onUpdateProgress={updateGoalProgress} onUpdateNumeric={updateNumericGoal} onAddSubtask={addSubtask} onArchive={archiveGoal} onSwipeArchive={requestArchiveGoal} onUnarchive={unarchiveGoal} onAdd={() => setModal({ type: 'goal' })} lang={lang} />}
-        {activeTab === 'tasks' && <TasksView t={t} tasks={visibleTasks} settings={settings} archivedCount={archivedCount} onToggle={toggleTask} onDelete={requestDeleteTask} onSwipeDelete={deleteTaskSwipe} onUpdate={(id, u) => updateItem('task', id, u)} onAdd={() => setModal({ type: 'task' })} onToggleArchived={() => setSettings(s => ({ ...s, showArchived: !s.showArchived }))} lang={lang} />}
+          : <DashboardView t={t} stats={stats} habits={activeHabits} goals={activeGoals} tasks={visibleTasks} settings={settings} daysShort={daysShort} onUpdateNumeric={updateNumericGoal} onToggleTask={toggleTask} onSwipeDeleteTask={deleteTaskSwipe} tick={tick} lang={lang} onOpenWeeklyReview={() => setShowWeeklyReview(true)} />)}
+        {activeTab === 'habits' && <HabitsView t={t} habits={habits} settings={settings} archivedCount={archivedHabitCount} showArchivedItems={settings.showArchivedItems} onToggleShowArchived={() => setSettings(s => ({ ...s, showArchivedItems: !s.showArchivedItems }))} onToggle={toggleHabit} onDelete={requestDeleteHabit} onUpdate={(id, u) => updateItem('habit', id, u)} onArchive={archiveHabit} onUnarchive={unarchiveHabit} onAdd={() => setModal({ type: 'habit' })} lang={lang} tags={tags} onOpenSettings={() => setShowSettings(true)} />}
+        {activeTab === 'goals' && <GoalsView t={t} goals={goals} archivedCount={archivedGoalCount} showArchivedItems={settings.showArchivedItems} onToggleShowArchived={() => setSettings(s => ({ ...s, showArchivedItems: !s.showArchivedItems }))} onToggleSubtask={toggleSubtask} onDelete={requestDeleteGoal} onDeleteSubtask={requestDeleteSubtask} onUpdate={(id, u) => updateItem('goal', id, u)} onUpdateProgress={updateGoalProgress} onUpdateNumeric={updateNumericGoal} onAddSubtask={addSubtask} onAddJournalEntry={addGoalJournalEntry} onDeleteJournalEntry={deleteGoalJournalEntry} onArchive={archiveGoal} onSwipeArchive={requestArchiveGoal} onUnarchive={unarchiveGoal} onAdd={() => setModal({ type: 'goal' })} lang={lang} tags={tags} onOpenSettings={() => setShowSettings(true)} />}
+        {activeTab === 'tasks' && <TasksView t={t} tasks={visibleTasks} settings={settings} archivedCount={archivedCount} onToggle={toggleTask} onDelete={requestDeleteTask} onSwipeDelete={deleteTaskSwipe} onUpdate={(id, u) => updateItem('task', id, u)} onAdd={() => setModal({ type: 'task' })} onToggleArchived={() => setSettings(s => ({ ...s, showArchived: !s.showArchived }))} lang={lang} tags={tags} onOpenSettings={() => setShowSettings(true)} />}
         {activeTab === 'calendar' && <CalendarView t={t} habits={activeHabits} tasks={visibleTasks} goals={activeGoals} settings={settings} daysShort={daysShort} onToggleHabit={toggleHabit} lang={lang} />}
-        {activeTab === 'stats' && <StatsView t={t} stats={stats} habits={activeHabits} goals={activeGoals} tasks={visibleTasks} daysShort={daysShort} settings={settings} lang={lang} />}
+        {activeTab === 'stats' && <StatsView t={t} stats={stats} habits={activeHabits} goals={activeGoals} tasks={visibleTasks} daysShort={daysShort} settings={settings} lang={lang} tags={tags} weeklyReviews={weeklyReviews} onDeleteWeeklyReview={requestDeleteWeeklyReview} />}
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-amber-500/10"
@@ -1401,23 +2035,31 @@ function App() {
         <QuickAddFAB t={t} onSelect={(type) => setModal({ type })} />
       )}
 
-      {modal && <AddModal t={t} type={modal.type} onSave={addItem} onClose={() => setModal(null)} />}
+      {modal && <AddModal t={t} type={modal.type} onSave={addItem} onClose={() => setModal(null)} tags={tags} onOpenSettings={() => setShowSettings(true)} habits={habits} />}
+      {showWeeklyReview && (
+        <WeeklyReviewModal
+          t={t}
+          lang={lang}
+          settings={settings}
+          habits={habits}
+          tags={tags}
+          weeklyReviews={weeklyReviews}
+          onSave={saveWeeklyReview}
+          onClose={() => setShowWeeklyReview(false)}
+        />
+      )}
       {showSettings && (
         <SettingsModal
           t={t} settings={settings} setSettings={setSettings}
           onClose={() => setShowSettings(false)}
           onExport={exportData}
-          onRequestImport={(file) => {
-            setConfirm({
-              title: t.confirmImportTitle,
-              body: t.confirmImportBody,
-              confirmLabel: t.yesOverwrite,
-              tone: 'warn',
-              onConfirm: () => { importData(file); setShowSettings(false); }
-            });
-          }}
+          onRequestImport={startImport}
           onLoadSample={handleLoadSampleFromSettings}
           notifPermission={notifPermission} onRequestNotif={requestNotifPermission}
+          tags={tags}
+          onAddTag={addTag}
+          onRenameTag={renameTag}
+          onRequestDeleteTag={requestDeleteTag}
         />
       )}
       {confirm && (
@@ -1427,12 +2069,39 @@ function App() {
       {undo && (
         <UndoToast label={undo.label} onUndo={applyUndo} onDismiss={() => setUndo(null)} lang={lang} />
       )}
+      {stackPrompt && !undo && (
+        <StackPromptToast
+          t={t}
+          childName={stackPrompt.childName}
+          onAccept={() => {
+            const childId = stackPrompt.childId;
+            setStackPrompt(null);
+            // Mark the child for today. Recursion is bounded — the child being
+            // checked here can itself have a child, which will surface its own
+            // toast via toggleHabit's effect path.
+            toggleHabit(childId);
+          }}
+          onDismiss={() => setStackPrompt(null)}
+        />
+      )}
       {storageError && (
         <div role="alert" aria-live="polite"
              className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-3 rounded-xl bg-rose-600/95 text-white shadow-2xl border border-rose-400/50 max-w-sm text-sm font-semibold"
              style={{ animation: 'fadeIn .2s ease-out' }}>
           {storageError}
           <button onClick={() => setStorageError(null)} className="ml-3 underline opacity-80">OK</button>
+        </div>
+      )}
+      {dataNotice && (
+        <div role={dataNotice.tone === 'error' ? 'alert' : 'status'} aria-live="polite"
+             className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-3 rounded-xl shadow-2xl border max-w-sm text-sm font-semibold ${
+               dataNotice.tone === 'error'
+                 ? 'bg-rose-600/95 text-white border-rose-400/50'
+                 : 'bg-emerald-600/95 text-white border-emerald-400/50'
+             }`}
+             style={{ animation: 'fadeIn .2s ease-out' }}>
+          {dataNotice.text}
+          <button onClick={() => setDataNotice(null)} className="ml-3 underline opacity-80">OK</button>
         </div>
       )}
     </div>
@@ -1499,8 +2168,289 @@ function WelcomeScreen({ t, onAddHabit, onAddGoal, onAddTask, onLoadSample, onSk
   );
 }
 
+// ============ WEEKLY REVIEW MODAL (т.2.12) ============
+// Recap modal for the current or previous week. Stats are computed live from
+// `habits`/`tags` (so opening the modal mid-day always reflects the latest
+// ticks); on save, a snapshot is frozen into the weeklyReviews log so the
+// history entry stays coherent even if items are later edited or deleted.
+//
+// Week toggle: "This week" (offset 0) is the default; "Last week" (offset -1)
+// is one tap away. Eligible-day count is shown so the user can tell when the
+// current-week review is partial.
+//
+// Existing-review notice: if there's already a saved review for the displayed
+// week, we prefill its text and surface a one-line warning that saving will
+// overwrite it.
+function WeeklyReviewModal({ t, lang, settings, habits, tags, weeklyReviews, onSave, onClose }) {
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [text, setText] = useState('');
+  const dialogRef = useRef(null);
+
+  const range = useMemo(() => weekRangeForOffset(new Date(), settings.weekStart, weekOffset), [settings.weekStart, weekOffset]);
+  const weekStartKey = useMemo(() => isoDateKey(range.start), [range.start]);
+  const weekEndKey = useMemo(() => isoDateKey(range.end), [range.end]);
+
+  const stats = useMemo(
+    () => computeWeeklyStats(habits, tags, range.start, range.end, new Date()),
+    [habits, tags, range.start, range.end]
+  );
+
+  // Existing review for this exact week (matched by weekStart key).
+  const existing = useMemo(
+    () => (weeklyReviews || []).find(r => r.weekStart === weekStartKey) || null,
+    [weeklyReviews, weekStartKey]
+  );
+
+  // Prefill the textarea whenever the displayed week (or its existing review) changes.
+  useEffect(() => {
+    setText(existing ? existing.text || '' : '');
+  }, [weekStartKey, existing]);
+
+  // Modal a11y — Escape closes; focus the dialog on mount so screen readers find it.
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } };
+    window.addEventListener('keydown', onKey);
+    dialogRef.current?.focus();
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const fullDays = lang === 'bg'
+    ? ['Неделя','Понеделник','Вторник','Сряда','Четвъртък','Петък','Събота']
+    : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  const handleSave = () => {
+    // Snapshot the stats at save time — we deliberately store a flattened,
+    // serializable object (no Date instances) so weeklyReviews survives an
+    // export/import round-trip without surprises.
+    const snapshot = {
+      totalTicks: stats.totalTicks,
+      bestDayKey: stats.bestDay ? stats.bestDay.key : null,
+      bestDayCount: stats.bestDay ? stats.bestDay.count : 0,
+      bestDayDow: stats.bestDay ? stats.bestDay.date.getDay() : null,
+      topHabitId: stats.topHabit ? stats.topHabit.id : null,
+      topHabitName: stats.topHabit ? stats.topHabit.name : null,
+      topHabitTicks: stats.topHabit ? stats.topHabit.count : 0,
+      tagCounts: stats.tagCounts,
+      stacksHeld: stats.stacksHeld.map(s => ({
+        childId: s.childId, parentId: s.parentId,
+        childName: s.childName, parentName: s.parentName
+      })),
+      eligibleDayCount: stats.eligibleDayCount,
+      activeHabitsCount: stats.activeHabitsCount
+    };
+    onSave({
+      weekStart: weekStartKey,
+      weekEnd: weekEndKey,
+      text,
+      stats: snapshot
+    });
+    onClose();
+  };
+
+  // Tags that received ≥1 tick this week, sorted desc by count. Used by the
+  // tag-breakdown bars; the bar widths are relative to the top tag (matches
+  // Stats "По тагове" visual language).
+  const tagRows = useMemo(() => {
+    const list = (tags || []).map(tag => ({ tag, count: stats.tagCounts[tag.id] || 0 }))
+      .filter(x => x.count > 0)
+      .sort((a, b) => b.count - a.count);
+    const max = list.reduce((m, x) => x.count > m ? x.count : m, 0);
+    return { list, max };
+  }, [tags, stats.tagCounts]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', animation: 'fadeIn 0.2s ease' }} onClick={onClose}
+      role="dialog" aria-modal="true" aria-labelledby="weekly-review-title">
+      <div onClick={(e) => e.stopPropagation()}
+        ref={dialogRef}
+        tabIndex={-1}
+        className="w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-amber-500/20 p-6 max-h-[92vh] overflow-y-auto scroll-hide focus:outline-none"
+        style={{ background: 'linear-gradient(180deg, var(--theme-bg-from), var(--theme-bg-mid))', animation: 'slideUp 0.3s ease', paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, var(--theme-primary), var(--theme-primary-dark))', boxShadow: '0 4px 16px var(--theme-glow)' }}>
+              <Icon name="calendar" className="w-4.5 h-4.5 text-black" strokeWidth={2.5} />
+            </div>
+            <h3 id="weekly-review-title" className="text-xl font-black text-amber-100" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>{t.weeklyReviewTitle}</h3>
+          </div>
+          <button onClick={onClose} aria-label={t.cancel} className="p-1.5 rounded-lg hover:bg-white/5 text-amber-200/50">
+            <Icon name="x" className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Week toggle */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          {[
+            { off: 0, label: t.weeklyReviewThisWeek },
+            { off: -1, label: t.weeklyReviewLastWeek }
+          ].map(({ off, label }) => (
+            <button key={off} onClick={() => setWeekOffset(off)}
+              aria-pressed={weekOffset === off}
+              className={`py-2 rounded-xl border font-bold text-xs uppercase tracking-wider transition-all ${weekOffset === off ? 'border-amber-500/60 bg-amber-500/15 text-amber-200' : 'border-white/5 bg-white/[0.02] text-amber-200/40'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Date range */}
+        <div className="mb-4 px-1">
+          <p className="text-base font-bold text-amber-100" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>{formatWeekRange(range.start, range.end, lang)}</p>
+          <p className="text-[11px] text-amber-200/50 mt-0.5">{typeof t.weeklyEligibleDays === 'function' ? t.weeklyEligibleDays(stats.eligibleDayCount) : ''}</p>
+        </div>
+
+        {/* Stats tiles */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+          {/* Total ticks */}
+          <div className="rounded-2xl border border-amber-500/30 p-3.5 relative overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, var(--theme-glow-soft), rgba(255,255,255,0.01))' }}>
+            <Icon name="zap" className="w-4 h-4 text-amber-400 mb-1.5" />
+            <div className="text-[10px] uppercase tracking-widest text-amber-200/50 font-bold">{t.weeklyTicks}</div>
+            <div className="text-3xl font-black text-amber-300 leading-none mt-1" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>{stats.totalTicks}</div>
+            <div className="text-[10px] text-amber-200/40 mt-1">{typeof t.weeklyTicksSub === 'function' ? t.weeklyTicksSub(stats.activeHabitsCount) : ''}</div>
+          </div>
+          {/* Best day */}
+          <div className="rounded-2xl border border-white/5 p-3.5"
+            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))' }}>
+            <Icon name="calendar" className="w-4 h-4 text-amber-200/50 mb-1.5" />
+            <div className="text-[10px] uppercase tracking-widest text-amber-200/50 font-bold">{t.weeklyStrongestDay}</div>
+            {stats.bestDay && stats.bestDay.count > 0 ? (
+              <>
+                <div className="text-base font-black text-amber-100 leading-snug mt-1" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>
+                  {fullDays[stats.bestDay.date.getDay()]}
+                </div>
+                <div className="text-[10px] text-amber-200/40 mt-0.5">{stats.bestDay.count} {t.weeklyTicksLabel}</div>
+              </>
+            ) : (
+              <div className="text-sm font-semibold text-amber-200/40 mt-1">{t.weeklyStrongestDayNone}</div>
+            )}
+          </div>
+          {/* Top habit */}
+          <div className="rounded-2xl border border-white/5 p-3.5"
+            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))' }}>
+            <Icon name="flame" className="w-4 h-4 text-amber-200/50 mb-1.5" />
+            <div className="text-[10px] uppercase tracking-widest text-amber-200/50 font-bold">{t.weeklyTopHabit}</div>
+            {stats.topHabit ? (
+              <>
+                <div className="text-sm font-black text-amber-100 leading-snug mt-1 truncate flex items-center gap-1">
+                  {stats.topHabit.important && <Icon name="star" className="w-3.5 h-3.5 flex-shrink-0" fill="#fbbf24" strokeWidth={0} />}
+                  <span className="truncate" style={{ fontFamily: 'ui-serif, Georgia, serif' }} title={stats.topHabit.name}>{stats.topHabit.name}</span>
+                </div>
+                <div className="text-[10px] text-amber-200/40 mt-0.5">{stats.topHabit.count} {t.weeklyTicksLabel}</div>
+              </>
+            ) : (
+              <div className="text-sm font-semibold text-amber-200/40 mt-1">{t.weeklyTopHabitNone}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Tag breakdown — only if there are defined tags AND any ticked-this-week tag. */}
+        {(tags || []).length > 0 && (
+          <section className="mb-4">
+            <h4 className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold mb-2 flex items-center gap-1.5">
+              <Icon name="palette" className="w-3 h-3" />{t.weeklyTagBreakdownTitle}
+            </h4>
+            <div className="space-y-2 p-3.5 rounded-2xl border border-white/5 bg-white/[0.02]">
+              {tagRows.list.length > 0 ? tagRows.list.map(({ tag, count }) => {
+                const pct = tagRows.max > 0 ? (count / tagRows.max) * 100 : 0;
+                return (
+                  <div key={tag.id}>
+                    <div className="flex justify-between items-center gap-2 mb-1">
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[11px] font-bold truncate"
+                        title={tag.name}
+                        style={{
+                          maxWidth: 160,
+                          background: tag.color,
+                          color: '#1a1208',
+                          boxShadow: `0 0 8px ${tag.color}60`
+                        }}>
+                        {tag.name}
+                      </span>
+                      <span className="text-xs font-black text-amber-200/60 flex-shrink-0">{count}</span>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{
+                        width: `${Math.max(pct, 4)}%`,
+                        background: tag.color,
+                        boxShadow: `0 0 8px ${tag.color}60`
+                      }} />
+                    </div>
+                  </div>
+                );
+              }) : (
+                <p className="text-xs text-amber-200/40 text-center py-2">{t.weeklyTagBreakdownEmpty}</p>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Stacks held */}
+        <section className="mb-4">
+          <h4 className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold mb-2 flex items-center gap-1.5">
+            <Icon name="chain" className="w-3 h-3" />{t.weeklyStacksHeld}
+          </h4>
+          <div className="p-3.5 rounded-2xl border border-white/5 bg-white/[0.02]">
+            {stats.stacksHeld.length > 0 ? (
+              <>
+                <p className="text-[10px] text-amber-200/50 mb-2">
+                  {typeof t.weeklyStacksHeldDesc === 'function' ? t.weeklyStacksHeldDesc(stats.eligibleDayCount) : ''}
+                </p>
+                <div className="space-y-1.5">
+                  {stats.stacksHeld.map(s => (
+                    <div key={s.childId} className="flex items-center gap-2 px-2.5 py-2 rounded-xl bg-violet-500/10 border border-violet-500/25">
+                      <Icon name="chain" className="w-3.5 h-3.5 text-violet-300 flex-shrink-0" />
+                      <span className="text-xs text-violet-100 truncate min-w-0 flex-1">
+                        <span className="font-semibold">{s.parentName}</span>
+                        <span className="mx-1 text-violet-300/70">→</span>
+                        <span className="font-semibold">{s.childName}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="text-xs text-amber-200/40 text-center py-2">{t.weeklyStacksHeldEmpty}</p>
+            )}
+          </div>
+        </section>
+
+        {/* Reflection */}
+        <section className="mb-4">
+          <h4 className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold mb-2 flex items-center gap-1.5">
+            <Icon name="note" className="w-3 h-3" />{t.weeklyReflection}
+          </h4>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t.weeklyReflectionPlaceholder}
+            rows={4}
+            className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-amber-50 placeholder-amber-200/30 focus:outline-none focus:border-amber-500/50 resize-none"
+          />
+          {existing && (
+            <p className="text-[11px] text-amber-300/70 mt-1.5 italic flex items-center gap-1.5">
+              <Icon name="info" className="w-3 h-3" />
+              {t.weeklyReviewExisting}
+            </p>
+          )}
+        </section>
+
+        <div className="flex gap-2">
+          <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-amber-100/70 font-bold">{t.cancel}</button>
+          <button onClick={handleSave}
+            className="flex-1 py-3 rounded-xl font-black text-black active:scale-95 transition-all"
+            style={{ background: 'linear-gradient(135deg, var(--theme-primary), var(--theme-primary-dark))', boxShadow: '0 4px 20px var(--theme-glow)' }}>
+            {t.weeklyReviewSaveBtn}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============ DASHBOARD ============
-function DashboardView({ t, stats, habits, goals, tasks, settings, daysShort, onUpdateNumeric, onToggleTask, onSwipeDeleteTask, tick, lang }) {
+function DashboardView({ t, stats, habits, goals, tasks, settings, daysShort, onUpdateNumeric, onToggleTask, onSwipeDeleteTask, tick, lang, onOpenWeeklyReview }) {
   const today = new Date().toDateString();
   return (
     <div className="space-y-5" style={{ animation: 'fadeIn 0.4s ease' }}>
@@ -1508,6 +2458,27 @@ function DashboardView({ t, stats, habits, goals, tasks, settings, daysShort, on
         <StatCard label={t.todayProgress} value={`${stats.habitRate}%`} sub={`${stats.doneToday} ${t.ofTotal} ${habits.length}`} icon="zap" highlight />
         <StatCard label={t.openTasksLabel} value={stats.openTasks} sub={t.open} icon="checkCircle" />
       </div>
+
+      {/* т.2.12: Weekly review CTA — opens the WeeklyReviewModal. Always shown
+          (no minimum-data threshold) so the entry point is consistent; the
+          modal itself handles the empty-state cases inside its tiles. */}
+      {onOpenWeeklyReview && (
+        <button
+          onClick={onOpenWeeklyReview}
+          aria-label={t.weeklyReviewCTA}
+          className="w-full flex items-center gap-3 p-3.5 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] hover:bg-amber-500/[0.10] transition-all active:scale-[0.99] text-left"
+          style={{ boxShadow: '0 0 18px var(--theme-glow-soft)' }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, var(--theme-primary), var(--theme-primary-dark))', boxShadow: '0 4px 14px var(--theme-glow)' }}>
+            <Icon name="calendar" className="w-5 h-5 text-black" strokeWidth={2.5} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-amber-100 text-sm leading-tight">{t.weeklyReviewCTA}</p>
+            <p className="text-[11px] text-amber-200/60 mt-0.5">{t.weeklyReviewCTASub}</p>
+          </div>
+          <Icon name="chevronRight" className="w-4 h-4 text-amber-300/60 flex-shrink-0" />
+        </button>
+      )}
 
       <StreakChampionsSection t={t} habits={habits} settings={settings} />
 
@@ -1833,10 +2804,12 @@ function TasksTodaySection({ t, tasks, onToggleTask, onSwipeDelete }) {
 }
 
 // ============ HABITS ============
-function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onToggleShowArchived, onToggle, onDelete, onUpdate, onArchive, onUnarchive, onAdd, lang }) {
+function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onToggleShowArchived, onToggle, onDelete, onUpdate, onArchive, onUnarchive, onAdd, lang, tags, onOpenSettings }) {
   const today = new Date().toDateString();
   const [expanded, setExpanded] = useState(null);
   const [query, setQuery] = useState('');
+  // т.2.10 sub-4: multi-select tag filter (OR within filter, AND with search).
+  const [filterTagIds, setFilterTagIds] = useState([]);
 
   // т.2.6: archived habits live alongside active ones in storage but are
   // rendered in a separate, dimmed section below the active list.
@@ -1844,14 +2817,21 @@ function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onT
   const archivedList = useMemo(() => habits.filter(h => h.archived),  [habits]);
 
   const filtered = useMemo(() => {
-    const base = !query.trim() ? activeList : activeList.filter(h => fuzzyMatch(query, h.name) || fuzzyMatch(query, h.notes || ''));
+    let base = activeList;
+    if (query.trim()) {
+      base = base.filter(h => fuzzyMatch(query, h.name) || fuzzyMatch(query, h.notes || ''));
+    }
+    if (filterTagIds.length > 0) {
+      const filterSet = new Set(filterTagIds);
+      base = base.filter(h => Array.isArray(h.tagIds) && h.tagIds.some(id => filterSet.has(id)));
+    }
     // Important habits float to the top, preserving relative order within each group.
     return base.slice().sort((a, b) => {
       const ai = a.important ? 1 : 0;
       const bi = b.important ? 1 : 0;
       return bi - ai;
     });
-  }, [activeList, query]);
+  }, [activeList, query, filterTagIds]);
 
   const fmtArchivedDate = (iso) => {
     if (!iso) return '';
@@ -1865,6 +2845,8 @@ function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onT
       {activeList.length >= 4 && (
         <SearchInput value={query} onChange={setQuery} placeholder={t.searchPlaceholder || (t.habits + '…')} />
       )}
+      {/* т.2.10 sub-4: tag filter row (auto-hides when no tags exist). */}
+      <TagFilterBar t={t} tags={tags} selected={filterTagIds} onChange={setFilterTagIds} />
       {archivedCount > 0 && (
         <button onClick={onToggleShowArchived}
           className="w-full flex items-center gap-2 p-2 mb-3 rounded-xl border border-white/5 bg-white/[0.02] text-amber-200/60 text-xs hover:bg-white/[0.04] transition-all">
@@ -1889,6 +2871,14 @@ function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onT
             const longest = calculateLongestStreak(h.completions, settings.freezeDays);
             const progressPct = hasTarget ? Math.min((streak / h.target) * 100, 100) : 0;
             const isOpen = expanded === h.id;
+            // т.2.11: visualize habit-stack relationships on the card itself.
+            // `parent` is rendered as a "→ X" pill (this habit comes after X);
+            // `childCount` produces a "Стак · N" pill (this habit is the
+            // anchor for N other habits). Archived parent/children are ignored.
+            const parent = h.stackedAfter != null
+              ? habits.find(p => p.id === h.stackedAfter && !p.archived)
+              : null;
+            const childCount = habits.filter(c => c.stackedAfter === h.id && !c.archived).length;
             return (
               <SwipeableRow
                 key={h.id}
@@ -1935,6 +2925,24 @@ function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onT
                           <Icon name="bell" className="w-3 h-3" />{h.reminderTime}
                         </span>
                       )}
+                      {/* т.2.11: parent pill — this habit comes after `parent.name`. */}
+                      {parent && (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/30 max-w-[12rem]"
+                          title={`${t.comesAfter}: ${parent.name}`}>
+                          <Icon name="chain" className="w-3 h-3 text-violet-300" />
+                          <span className="font-bold text-violet-200 truncate">→ {parent.name}</span>
+                        </span>
+                      )}
+                      {/* т.2.11: parent-of-N pill — surfaces that this habit is the
+                          anchor for N stack-children (rendered when the user is on
+                          the parent's card, not the child's). */}
+                      {childCount > 0 && (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/25"
+                          title={typeof t.stackParentBadge === 'function' ? t.stackParentBadge(childCount) : ''}>
+                          <Icon name="chain" className="w-3 h-3 text-violet-300" />
+                          <span className="font-bold text-violet-200">{typeof t.stackParentBadge === 'function' ? t.stackParentBadge(childCount) : ''}</span>
+                        </span>
+                      )}
                       {broken && !done && (
                         <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30">
                           <Icon name="broken" className="w-3 h-3 text-rose-400" />
@@ -1977,6 +2985,16 @@ function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onT
                     )}
                     {isOpen && (
                       <div className="mt-3 pt-3 border-t border-white/5 space-y-2">
+                        {/* т.2.11: explicit "идва след: X" line in expanded view —
+                            redundant with the dropdown below, but reads as plain
+                            text so the relationship is obvious at a glance. */}
+                        {parent && (
+                          <div className="flex items-center gap-1.5 text-[11px] text-violet-200/80">
+                            <Icon name="chain" className="w-3 h-3 text-violet-300" />
+                            <span className="uppercase tracking-wider font-bold text-violet-300/70">{t.comesAfter}:</span>
+                            <span className="font-semibold text-violet-100 truncate">{parent.name}</span>
+                          </div>
+                        )}
                         <div>
                           <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="target" className="w-3 h-3" />{t.targetOptional}</label>
                           <input type="number" min="1" inputMode="numeric" value={hasTarget ? h.target : ''} placeholder={t.noTarget}
@@ -1992,6 +3010,33 @@ function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onT
                           <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="bell" className="w-3 h-3" />{t.reminderTime}</label>
                           <input type="time" value={h.reminderTime || ''} onChange={(e) => onUpdate(h.id, { reminderTime: e.target.value })}
                             className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 focus:outline-none focus:border-amber-500/50" />
+                        </div>
+                        {/* т.2.11: stack-parent dropdown in inline edit. Eligible
+                            parents come from getEligibleStackParents (excludes
+                            self, archived, and any choice that would create a
+                            cycle). */}
+                        <div>
+                          <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1">
+                            <Icon name="chain" className="w-3 h-3" />{t.stackedAfter}
+                          </label>
+                          <select value={h.stackedAfter == null ? '' : String(h.stackedAfter)}
+                            onChange={(e) => {
+                              const v = e.target.value;
+                              onUpdate(h.id, { stackedAfter: v === '' ? null : Number(v) });
+                            }}
+                            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 focus:outline-none focus:border-amber-500/50">
+                            <option value="">{t.standalone}</option>
+                            {getEligibleStackParents(habits, h.id).map(p => (
+                              <option key={p.id} value={String(p.id)}>{p.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        {/* т.2.10 sub-3: inline tag editing — paralel към Тагове реда в AddModal. */}
+                        <div>
+                          <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold">{t.tagsLabel}</label>
+                          <div className="mt-1">
+                            <TagChipSelector t={t} tags={tags} selected={h.tagIds || []} onChange={(ids) => onUpdate(h.id, { tagIds: ids })} onOpenSettings={onOpenSettings} />
+                          </div>
                         </div>
                         <div>
                           <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="note" className="w-3 h-3" />{t.notes}</label>
@@ -2063,28 +3108,94 @@ function HabitsView({ t, habits, settings, archivedCount, showArchivedItems, onT
 }
 
 // ============ GOALS ============
-function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArchived, onToggleSubtask, onDelete, onDeleteSubtask, onUpdate, onUpdateProgress, onUpdateNumeric, onAddSubtask, onArchive, onSwipeArchive, onUnarchive, onAdd, lang }) {
+// т.3.1: compute pace between expected and actual progress given a deadline.
+// Returns null when pace can't be derived (no deadline, or start >= deadline).
+// `overdue` becomes true past deadline when not yet complete; gap = actual - expected.
+function computeGoalPace(g, now = new Date()) {
+  if (!g || !g.deadline) return null;
+  if (g.progress >= 100) return null;
+  const deadline = new Date(g.deadline);
+  if (isNaN(deadline.getTime())) return null;
+  // createdAt fallback: goal.id is typically a Date.now() millis stamp.
+  const startSrc = g.createdAt || (typeof g.id === 'number' ? new Date(g.id).toISOString() : null);
+  if (!startSrc) return null;
+  const start = new Date(startSrc);
+  if (isNaN(start.getTime())) return null;
+  const totalMs = deadline.getTime() - start.getTime();
+  if (totalMs <= 0) return null;
+  const elapsedMs = now.getTime() - start.getTime();
+  const daysLeft = Math.ceil((deadline.getTime() - now.getTime()) / 86400000);
+  const overdue = now.getTime() > deadline.getTime();
+  const elapsedPct = Math.max(0, Math.min(100, Math.round((elapsedMs / totalMs) * 100)));
+  const expectedPct = overdue ? 100 : elapsedPct;
+  const actualPct = Math.round(g.progress || 0);
+  const gap = actualPct - expectedPct;
+  return { daysLeft, expectedPct, actualPct, gap, overdue, daysOver: overdue ? Math.abs(daysLeft) : 0 };
+}
+
+function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArchived, onToggleSubtask, onDelete, onDeleteSubtask, onUpdate, onUpdateProgress, onUpdateNumeric, onAddSubtask, onAddJournalEntry, onDeleteJournalEntry, onArchive, onSwipeArchive, onUnarchive, onAdd, lang, tags, onOpenSettings }) {
   const [expanded, setExpanded] = useState(null);
   const [newSub, setNewSub] = useState('');
   const [query, setQuery] = useState('');
+  // т.2.10 sub-4: multi-select tag filter (OR within filter, AND with search).
+  const [filterTagIds, setFilterTagIds] = useState([]);
+  // т.3.2: local scratch state for journal composer, keyed by goal id so
+  // switching between expanded goals doesn't leak draft text.
+  const [journalDraft, setJournalDraft] = useState({ goalId: null, text: '', date: '' });
 
   // т.2.6: split active vs archived goals — archived render in a faded section below.
   const activeList   = useMemo(() => goals.filter(g => !g.archived), [goals]);
   const archivedList = useMemo(() => goals.filter(g => g.archived),  [goals]);
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return activeList;
-    return activeList.filter(g =>
-      fuzzyMatch(query, g.name) ||
-      fuzzyMatch(query, g.notes || '') ||
-      (g.subtasks || []).some(s => fuzzyMatch(query, s.text))
-    );
-  }, [activeList, query]);
+    let base = activeList;
+    if (query.trim()) {
+      base = base.filter(g =>
+        fuzzyMatch(query, g.name) ||
+        fuzzyMatch(query, g.notes || '') ||
+        (g.subtasks || []).some(s => fuzzyMatch(query, s.text)) ||
+        (g.journal || []).some(e => fuzzyMatch(query, e.text))
+      );
+    }
+    if (filterTagIds.length > 0) {
+      const filterSet = new Set(filterTagIds);
+      base = base.filter(g => Array.isArray(g.tagIds) && g.tagIds.some(id => filterSet.has(id)));
+    }
+    return base;
+  }, [activeList, query, filterTagIds]);
 
   const fmtArchivedDate = (iso) => {
     if (!iso) return '';
     try { return new Date(iso).toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }); }
     catch { return ''; }
+  };
+
+  // т.3.2: short, year-aware date label for journal entries (YYYY-MM-DD → "15 апр" / "Apr 15").
+  // Renders "днес" / "today" when the entry's date equals the current local date.
+  const fmtJournalDate = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr + 'T00:00:00');
+      if (isNaN(d.getTime())) return dateStr;
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      if (d.getTime() === today.getTime()) {
+        const label = t.today || '';
+        return label.charAt(0).toUpperCase() + label.slice(1);
+      }
+      const sameYear = d.getFullYear() === today.getFullYear();
+      return d.toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US',
+        sameYear ? { day: 'numeric', month: 'short' } : { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch { return dateStr; }
+  };
+
+  const todayKey = () => new Date().toISOString().slice(0, 10);
+
+  const submitJournal = (goalId) => {
+    const text = (journalDraft.goalId === goalId ? journalDraft.text : '').trim();
+    if (!text) return;
+    const date = (journalDraft.goalId === goalId && journalDraft.date) || todayKey();
+    onAddJournalEntry(goalId, text, date);
+    setJournalDraft({ goalId, text: '', date: '' });
   };
 
   return (
@@ -2093,6 +3204,8 @@ function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArc
       {activeList.length >= 4 && (
         <SearchInput value={query} onChange={setQuery} placeholder={t.searchPlaceholder || (t.goals + '…')} />
       )}
+      {/* т.2.10 sub-4: tag filter row (auto-hides when no tags exist). */}
+      <TagFilterBar t={t} tags={tags} selected={filterTagIds} onChange={setFilterTagIds} />
       {archivedCount > 0 && (
         <button onClick={onToggleShowArchived}
           className="w-full flex items-center gap-2 p-2 mb-3 rounded-xl border border-white/5 bg-white/[0.02] text-amber-200/60 text-xs hover:bg-white/[0.04] transition-all">
@@ -2113,6 +3226,7 @@ function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArc
             const isOpen = expanded === g.id;
             const cat = CATEGORY_META[g.category];
             const daysLeft = g.deadline ? Math.ceil((new Date(g.deadline) - new Date()) / 86400000) : null;
+            const pace = computeGoalPace(g);
             return (
               <SwipeableRow
                 key={g.id}
@@ -2141,13 +3255,51 @@ function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArc
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <div className="text-2xl font-black text-amber-300" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>{g.progress}%</div>
-                      <Icon name="chevronRight" className={`w-4 h-4 text-amber-200/40 ml-auto transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+                      <div className="text-2xl font-black text-amber-300 leading-none" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>{g.progress}%</div>
+                      {/* т.3.3: subtle "N/M · auto" subtitle when milestones drive the progress %. */}
+                      {!g.numeric && Array.isArray(g.subtasks) && g.subtasks.length > 0 && (
+                        <div className="text-[9px] uppercase tracking-widest text-amber-300/50 font-bold mt-1">
+                          {g.subtasks.filter(s => s.done).length}/{g.subtasks.length} · {t.milestonesAuto}
+                        </div>
+                      )}
+                      <Icon name="chevronRight" className={`w-4 h-4 text-amber-200/40 ml-auto transition-transform mt-1 ${isOpen ? 'rotate-90' : ''}`} />
                     </div>
                   </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                  <div className="relative h-2 bg-white/5 rounded-full">
                     <div className="h-full rounded-full transition-all" style={{ width: `${g.progress}%`, background: `linear-gradient(to right, ${cat?.color}, var(--theme-primary-light))`, boxShadow: `0 0 10px ${cat?.color}80` }} />
+                    {pace && !pace.overdue && pace.expectedPct > 0 && pace.expectedPct < 100 && (
+                      <div
+                        aria-hidden="true"
+                        title={`${t.paceExpected} ${pace.expectedPct}%`}
+                        className="absolute top-[-3px] bottom-[-3px] w-[2px] rounded-sm bg-amber-100/70 pointer-events-none"
+                        style={{ left: `${pace.expectedPct}%`, transform: 'translateX(-1px)', boxShadow: '0 0 4px rgba(251,191,36,0.6)' }} />
+                    )}
                   </div>
+                  {pace && (
+                    <div className="mt-2 flex items-center gap-2 text-[11px] text-amber-200/55 flex-wrap">
+                      {pace.overdue ? (
+                        <>
+                          <span className="text-rose-300/80">{t.paceOverdue} · {pace.daysOver} {t.daysLeft}</span>
+                          <span className="text-amber-200/40">·</span>
+                          <span>{t.paceYouAre} {pace.actualPct}%</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{t.paceExpected} <span className="text-amber-100/80 font-bold">{pace.expectedPct}%</span></span>
+                          <span className="text-amber-200/40">·</span>
+                          <span>{t.paceYouAre} <span className="text-amber-100/80 font-bold">{pace.actualPct}%</span></span>
+                          <span className="text-amber-200/40">·</span>
+                          {pace.gap >= -2 && pace.gap <= 2 ? (
+                            <span className="text-emerald-300/80">{t.paceOnTrack}</span>
+                          ) : pace.gap > 2 ? (
+                            <span className="text-emerald-300/80">{t.paceAhead} {pace.gap}%</span>
+                          ) : (
+                            <span className="text-amber-300/80">{t.paceBehind} {Math.abs(pace.gap)}%</span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
                 </button>
 
                 {isOpen && (
@@ -2176,7 +3328,20 @@ function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArc
 
                     {!g.numeric && (
                       <div>
-                        <label className="text-xs uppercase tracking-wider text-amber-300/60 font-bold">{t.subtasks}</label>
+                        {/* т.3.3: section label includes done/total + auto-computed % when milestones exist. */}
+                        <label className="text-xs uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1.5">
+                          <Icon name="checkCircle" className="w-3 h-3" />
+                          <span>{t.subtasks}</span>
+                          {g.subtasks.length > 0 && (() => {
+                            const doneCount = g.subtasks.filter(s => s.done).length;
+                            const pct = Math.round((doneCount / g.subtasks.length) * 100);
+                            return (
+                              <span className="ml-0.5 text-amber-200/45 font-normal normal-case tracking-normal">
+                                · {doneCount}/{g.subtasks.length} · {pct}%
+                              </span>
+                            );
+                          })()}
+                        </label>
                         <div className="mt-2 space-y-1.5">
                           {g.subtasks.map(s => (
                             <div key={s.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/[0.03] group">
@@ -2200,13 +3365,91 @@ function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArc
                             <Icon name="plus" className="w-4 h-4" />
                           </button>
                         </div>
+                        {/* т.3.3: empty-state hint — explains the auto-compute model when there are no milestones yet. */}
+                        {g.subtasks.length === 0 && (
+                          <div className="mt-1.5 text-[11px] text-amber-200/40 italic flex items-start gap-1.5">
+                            <Icon name="info" className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                            <span>{t.milestonesHint}</span>
+                          </div>
+                        )}
                       </div>
                     )}
+
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="clock" className="w-3 h-3" />{t.editDeadline}</label>
+                      <div className="mt-1 flex gap-2 items-center">
+                        <input type="date" value={g.deadline || ''} onChange={(e) => onUpdate(g.id, { deadline: e.target.value })}
+                          className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 focus:outline-none focus:border-amber-500/50" />
+                        {g.deadline && (
+                          <button onClick={() => onUpdate(g.id, { deadline: '' })} aria-label={t.clearDeadline}
+                            className="p-2 rounded-lg bg-white/5 border border-white/10 text-amber-200/50 hover:text-rose-400">
+                            <Icon name="x" className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      {!g.deadline && (
+                        <div className="mt-1.5 text-[10px] text-amber-200/40 italic">{t.paceNoDeadline}</div>
+                      )}
+                    </div>
+
+                    {/* т.2.10 sub-3: inline tag editing за цел. */}
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold">{t.tagsLabel}</label>
+                      <div className="mt-1">
+                        <TagChipSelector t={t} tags={tags} selected={g.tagIds || []} onChange={(ids) => onUpdate(g.id, { tagIds: ids })} onOpenSettings={onOpenSettings} />
+                      </div>
+                    </div>
 
                     <div>
                       <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="note" className="w-3 h-3" />{t.notes}</label>
                       <textarea value={g.notes || ''} onChange={(e) => onUpdate(g.id, { notes: e.target.value })} placeholder={t.addNote} rows={2}
                         className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 placeholder-amber-200/30 focus:outline-none focus:border-amber-500/50 resize-none" />
+                    </div>
+
+                    {/* т.3.2: Journal — append-only log of progress entries. */}
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1">
+                        <Icon name="calendar" className="w-3 h-3" />{t.journal}
+                        {(g.journal || []).length > 0 && (
+                          <span className="ml-1 text-amber-200/40 font-normal">· {g.journal.length}</span>
+                        )}
+                      </label>
+                      {(g.journal || []).length === 0 ? (
+                        <div className="mt-1.5 text-[11px] text-amber-200/35 italic">{t.noJournalEntries}</div>
+                      ) : (
+                        <div className="mt-2 space-y-1.5 max-h-64 overflow-y-auto scroll-hide">
+                          {g.journal.map(e => (
+                            <div key={e.id} className="group rounded-lg bg-white/[0.03] border border-white/5 p-2.5 flex items-start gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[10px] uppercase tracking-wider text-amber-300/70 font-bold mb-0.5">{fmtJournalDate(e.date)}</div>
+                                <div className="text-sm text-amber-50 whitespace-pre-wrap break-words">{e.text}</div>
+                              </div>
+                              <button onClick={() => onDeleteJournalEntry(g.id, e.id)} aria-label={t.deleteEntry}
+                                className="p-1 text-amber-200/25 hover:text-rose-400 flex-shrink-0 transition-colors">
+                                <Icon name="x" className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                        <input type="date"
+                          value={journalDraft.goalId === g.id ? (journalDraft.date || todayKey()) : todayKey()}
+                          max={todayKey()}
+                          onChange={(e) => setJournalDraft({ goalId: g.id, text: journalDraft.goalId === g.id ? journalDraft.text : '', date: e.target.value })}
+                          className="px-2.5 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-amber-50 focus:outline-none focus:border-amber-500/50 sm:w-32" />
+                        <input
+                          value={journalDraft.goalId === g.id ? journalDraft.text : ''}
+                          onChange={(e) => setJournalDraft({ goalId: g.id, text: e.target.value, date: journalDraft.goalId === g.id ? journalDraft.date : '' })}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); submitJournal(g.id); } }}
+                          placeholder={t.journalPlaceholder}
+                          className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 placeholder-amber-200/30 focus:outline-none focus:border-amber-500/50" />
+                        <button onClick={() => submitJournal(g.id)}
+                          disabled={!(journalDraft.goalId === g.id && journalDraft.text.trim())}
+                          className="px-3 py-2 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-amber-500/30 transition-all active:scale-[0.98]">
+                          <Icon name="plus" className="w-4 h-4" /> {t.addJournalEntry}
+                        </button>
+                      </div>
                     </div>
 
                     <button onClick={() => { setExpanded(null); onArchive(g.id); }}
@@ -2275,18 +3518,24 @@ function GoalsView({ t, goals, archivedCount, showArchivedItems, onToggleShowArc
 }
 
 // ============ TASKS ============
-function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onSwipeDelete, onUpdate, onAdd, onToggleArchived, lang }) {
+function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onSwipeDelete, onUpdate, onAdd, onToggleArchived, lang, tags, onOpenSettings }) {
   const [expanded, setExpanded] = useState(null);
   const [query, setQuery] = useState('');
+  // т.2.10 sub-4: multi-select tag filter (OR within filter, AND with search).
+  const [filterTagIds, setFilterTagIds] = useState([]);
   const sorted = useMemo(() => {
-    const base = query.trim()
+    let base = query.trim()
       ? tasks.filter(ta => fuzzyMatch(query, ta.name) || fuzzyMatch(query, ta.notes || ''))
       : tasks;
+    if (filterTagIds.length > 0) {
+      const filterSet = new Set(filterTagIds);
+      base = base.filter(ta => Array.isArray(ta.tagIds) && ta.tagIds.some(id => filterSet.has(id)));
+    }
     return [...base].sort((a, b) => {
       if (a.done !== b.done) return a.done ? 1 : -1;
       return new Date(a.deadline || '2099-01-01') - new Date(b.deadline || '2099-01-01');
     });
-  }, [tasks, query]);
+  }, [tasks, query, filterTagIds]);
 
   const formatDeadline = (dl) => {
     if (!dl) return '';
@@ -2305,6 +3554,8 @@ function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onSw
       {tasks.length >= 5 && (
         <SearchInput value={query} onChange={setQuery} placeholder={t.searchPlaceholder || (t.tasks + '…')} />
       )}
+      {/* т.2.10 sub-4: tag filter row (auto-hides when no tags exist). */}
+      <TagFilterBar t={t} tags={tags} selected={filterTagIds} onChange={setFilterTagIds} />
       {settings.autoArchive && archivedCount > 0 && (
         <button onClick={onToggleArchived}
           className="mb-3 w-full flex items-center gap-2 p-2.5 rounded-xl border border-white/5 bg-white/[0.02] text-xs text-amber-200/60 hover:bg-white/[0.04]">
@@ -2368,6 +3619,13 @@ function TasksView({ t, tasks, settings, archivedCount, onToggle, onDelete, onSw
                       <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="bell" className="w-3 h-3" />{t.reminderTime}</label>
                       <input type="time" value={ta.reminderTime || ''} onChange={(e) => onUpdate(ta.id, { reminderTime: e.target.value })}
                         className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-amber-50 focus:outline-none focus:border-amber-500/50" />
+                    </div>
+                    {/* т.2.10 sub-3: inline tag editing за задача. */}
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold">{t.tagsLabel}</label>
+                      <div className="mt-1">
+                        <TagChipSelector t={t} tags={tags} selected={ta.tagIds || []} onChange={(ids) => onUpdate(ta.id, { tagIds: ids })} onOpenSettings={onOpenSettings} />
+                      </div>
                     </div>
                     <div>
                       <label className="text-[10px] uppercase tracking-wider text-amber-300/60 font-bold flex items-center gap-1"><Icon name="note" className="w-3 h-3" />{t.notes}</label>
@@ -2587,13 +3845,33 @@ function CalendarView({ t, habits, tasks, goals, settings, daysShort, onToggleHa
 }
 
 // ============ STATS ============
-function StatsView({ t, stats, habits, goals, tasks, daysShort, settings, lang }) {
+function StatsView({ t, stats, habits, goals, tasks, daysShort, settings, lang, tags = [], weeklyReviews = [], onDeleteWeeklyReview }) {
   const byCategory = useMemo(() => {
     const cats = {};
     [...habits, ...goals, ...tasks].forEach(item => { cats[item.category] = (cats[item.category] || 0) + 1; });
     const total = Object.values(cats).reduce((a, b) => a + b, 0) || 1;
     return Object.entries(cats).map(([cat, count]) => ({ cat, count, pct: (count / total) * 100 }));
   }, [habits, goals, tasks]);
+
+  // т.2.10 sub-5: tag breakdown — за всеки дефиниран таг броим в колко
+  // активни елемента (habits + goals + tasks) се появява. OR-логика:
+  // елемент с няколко тага се брои във всеки от тях (същото поведение
+  // като филтъра в листите). Сортираме по общ count desc; bar-ът е
+  // относителен спрямо най-горния (max), за да се вижда йерархията
+  // дори при малки числа. Ако няма дефинирани тагове — секцията не
+  // се рендерира изобщо. Ако има тагове, но никой елемент не е тагнат —
+  // показваме приятен empty state.
+  const byTag = useMemo(() => {
+    if (!tags || tags.length === 0) return { rows: [], maxCount: 0, anyTagged: false };
+    const rows = tags.map(tag => {
+      const h = habits.filter(x => Array.isArray(x.tagIds) && x.tagIds.includes(tag.id)).length;
+      const g = goals.filter(x => Array.isArray(x.tagIds) && x.tagIds.includes(tag.id)).length;
+      const ta = tasks.filter(x => Array.isArray(x.tagIds) && x.tagIds.includes(tag.id)).length;
+      return { tag, habits: h, goals: g, tasks: ta, count: h + g + ta };
+    }).sort((a, b) => b.count - a.count);
+    const maxCount = rows.reduce((m, r) => r.count > m ? r.count : m, 0);
+    return { rows, maxCount, anyTagged: maxCount > 0 };
+  }, [tags, habits, goals, tasks]);
 
   // ----- Insights -----
   const insights = useMemo(() => {
@@ -2713,6 +3991,54 @@ function StatsView({ t, stats, habits, goals, tasks, daysShort, settings, lang }
         </div>
       </section>
 
+      {/* т.2.10 sub-5: разрез по таг — нова секция, ДОПЪЛВА categoryBreakdown
+          (не я заменя). Показва се само ако има поне един дефиниран таг —
+          инак секцията липсва изцяло, без dead chrome. */}
+      {tags && tags.length > 0 && (
+        <section>
+          <h2 className="text-xs uppercase tracking-widest text-amber-300/60 font-bold mb-3">{t.tagBreakdown}</h2>
+          <div className="space-y-3 p-4 rounded-2xl border border-white/5 bg-white/[0.02]">
+            {byTag.anyTagged ? byTag.rows.map(({ tag, habits: hN, goals: gN, tasks: taN, count }) => {
+              const pct = byTag.maxCount > 0 ? (count / byTag.maxCount) * 100 : 0;
+              const breakdown = [hN && `${hN}н`, gN && `${gN}ц`, taN && `${taN}з`].filter(Boolean).join(' · ');
+              const breakdownEn = [hN && `${hN}h`, gN && `${gN}g`, taN && `${taN}t`].filter(Boolean).join(' · ');
+              const sub = lang === 'bg' ? breakdown : breakdownEn;
+              return (
+                <div key={tag.id}>
+                  <div className="flex justify-between items-center gap-2 mb-1">
+                    <span className="flex items-center gap-2 min-w-0">
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[11px] font-bold truncate"
+                        title={tag.name}
+                        style={{
+                          maxWidth: 160,
+                          background: count > 0 ? tag.color : `${tag.color}1f`,
+                          color: count > 0 ? '#1a1208' : tag.color,
+                          boxShadow: count > 0 ? `0 0 8px ${tag.color}60` : 'none',
+                          border: count > 0 ? 'none' : `1px solid ${tag.color}55`
+                        }}>
+                        {tag.name}
+                      </span>
+                      {sub && <span className="text-[10px] text-amber-200/40 font-medium truncate">{sub}</span>}
+                    </span>
+                    <span className="text-xs font-black text-amber-200/60 flex-shrink-0">{count}</span>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all" style={{
+                      width: `${Math.max(pct, count > 0 ? 4 : 0)}%`,
+                      background: tag.color,
+                      boxShadow: count > 0 ? `0 0 8px ${tag.color}60` : 'none'
+                    }} />
+                  </div>
+                </div>
+              );
+            }) : (
+              <p className="text-sm text-amber-200/40 text-center py-4">{t.tagBreakdownEmpty}</p>
+            )}
+          </div>
+        </section>
+      )}
+
       <section>
         <h2 className="text-xs uppercase tracking-widest text-amber-300/60 font-bold mb-3">{t.weekActivity}</h2>
         <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
@@ -2732,6 +4058,74 @@ function StatsView({ t, stats, habits, goals, tasks, daysShort, settings, lang }
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* т.2.12: Weekly reviews history — list of saved reflections with the
+          stats snapshot frozen at save time. Newest-first. Empty state shown
+          if the user hasn't saved any yet but the section header still
+          renders so the feature is discoverable. */}
+      <section>
+        <h2 className="text-xs uppercase tracking-widest text-amber-300/60 font-bold mb-3 flex items-center gap-2">
+          <Icon name="calendar" className="w-3.5 h-3.5" />{t.weeklyReviewsHistory}
+          {weeklyReviews.length > 0 && <span className="ml-auto text-amber-200/50 normal-case tracking-normal font-bold">{weeklyReviews.length}</span>}
+        </h2>
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+          {weeklyReviews.length === 0 ? (
+            <p className="text-sm text-amber-200/40 text-center py-3">{t.weeklyReviewsEmpty}</p>
+          ) : (
+            <div className="space-y-3">
+              {[...weeklyReviews]
+                .sort((a, b) => (b.weekStart || '').localeCompare(a.weekStart || ''))
+                .map(r => {
+                  const startDate = new Date(r.weekStart);
+                  const endDate = new Date(r.weekEnd);
+                  const valid = !isNaN(startDate.getTime()) && !isNaN(endDate.getTime());
+                  const range = valid ? formatWeekRange(startDate, endDate, lang) : `${r.weekStart} – ${r.weekEnd}`;
+                  const ticks = (r.stats && typeof r.stats.totalTicks === 'number') ? r.stats.totalTicks : 0;
+                  const bestDow = r.stats && typeof r.stats.bestDayDow === 'number' ? r.stats.bestDayDow : null;
+                  const bestDayLabel = bestDow != null
+                    ? (lang === 'bg'
+                        ? ['Неделя','Понеделник','Вторник','Сряда','Четвъртък','Петък','Събота'][bestDow]
+                        : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][bestDow])
+                    : null;
+                  return (
+                    <div key={r.id} className="rounded-xl border border-amber-500/15 bg-white/[0.02] p-3">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-bold text-amber-100 leading-tight">{range}</p>
+                          <p className="text-[10px] text-amber-200/50 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                            <span className="font-semibold">{typeof t.weeklyReviewItemSummary === 'function' ? t.weeklyReviewItemSummary(ticks) : `${ticks}`}</span>
+                            {bestDayLabel && <span className="text-amber-200/30">·</span>}
+                            {bestDayLabel && <span><Icon name="calendar" className="w-3 h-3 inline-block mr-0.5 -mt-0.5" />{bestDayLabel}</span>}
+                            {r.stats && r.stats.topHabitName && <span className="text-amber-200/30">·</span>}
+                            {r.stats && r.stats.topHabitName && (
+                              <span className="truncate" title={r.stats.topHabitName} style={{ maxWidth: 160 }}>
+                                <Icon name="flame" className="w-3 h-3 inline-block mr-0.5 -mt-0.5" />{r.stats.topHabitName}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        {onDeleteWeeklyReview && (
+                          <button
+                            onClick={() => onDeleteWeeklyReview(r.id)}
+                            aria-label={t.delete}
+                            title={t.delete}
+                            className="p-1.5 rounded-lg hover:bg-rose-500/10 text-amber-200/30 hover:text-rose-400 transition-colors flex-shrink-0">
+                            <Icon name="trash" className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      {r.text && r.text.trim() && (
+                        <p className="text-xs text-amber-100/80 leading-relaxed whitespace-pre-line border-l-2 border-amber-500/30 pl-2.5 italic">
+                          {r.text}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          )}
         </div>
       </section>
     </div>
@@ -2924,7 +4318,7 @@ function SearchInput({ value, onChange, placeholder }) {
 }
 
 // ============ ADD MODAL ============
-function AddModal({ t, type, onSave, onClose }) {
+function AddModal({ t, type, onSave, onClose, tags, onOpenSettings, habits = [] }) {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('personal');
   const [deadline, setDeadline] = useState('');
@@ -2936,15 +4330,23 @@ function AddModal({ t, type, onSave, onClose }) {
   const [numTarget, setNumTarget] = useState(100);
   const [numUnit, setNumUnit] = useState('');
   const [important, setImportant] = useState(false);
+  // т.2.10 sub-3: tagIds is an additive multi-select state alongside the
+  // legacy single `category`. Items can have zero tags — that's valid.
+  const [tagIds, setTagIds] = useState([]);
+  // т.2.11: stackedAfter — id of the parent habit this new habit comes after,
+  // or null for "Самостоятелен". For a brand-new habit no cycle is possible
+  // (it doesn't exist yet), so we just exclude archived parents.
+  const [stackedAfter, setStackedAfter] = useState(null);
 
   const handleSave = () => {
     if (!name.trim()) return;
-    const data = { name: name.trim(), category, notes };
+    const data = { name: name.trim(), category, notes, tagIds };
     if (type === 'habit') {
       const parsedTarget = parseInt(target);
       data.target = (Number.isFinite(parsedTarget) && parsedTarget > 0) ? parsedTarget : null;
       data.reminderTime = reminderTime;
       data.important = important;
+      data.stackedAfter = stackedAfter;
     }
     if (type === 'goal') {
       data.deadline = deadline;
@@ -3002,6 +4404,17 @@ function AddModal({ t, type, onSave, onClose }) {
             </div>
           </div>
 
+          {/* т.2.10 sub-3: tags chip-selector — стои като отделен ред под "Категория".
+              Старото поле остава непокътнато; таговете са допълнителен (optional)
+              слой, multi-select. При липсващи дефинирани тагове показваме CTA
+              към Settings. */}
+          <div>
+            <label className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold">{t.tagsLabel}</label>
+            <div className="mt-1.5">
+              <TagChipSelector t={t} tags={tags} selected={tagIds} onChange={setTagIds} onOpenSettings={onOpenSettings} />
+            </div>
+          </div>
+
           {type === 'habit' && (
             <>
               <div>
@@ -3019,6 +4432,25 @@ function AddModal({ t, type, onSave, onClose }) {
                 <Icon name="star" className="w-4 h-4" fill={important ? '#fbbf24' : 'none'} strokeWidth={important ? 0 : 2} />
                 <span className="font-bold uppercase tracking-wider text-[10px] text-amber-300/80">{t.importantHabit}</span>
               </label>
+              {/* т.2.11: stack-parent dropdown. New habits can stack after any
+                  active habit; cycles are impossible at create-time because the
+                  new habit has no id yet. */}
+              <div>
+                <label className="text-[10px] uppercase tracking-widest text-amber-300/60 font-bold flex items-center gap-1">
+                  <Icon name="chain" className="w-3 h-3" />{t.stackedAfter}
+                </label>
+                <select value={stackedAfter == null ? '' : String(stackedAfter)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setStackedAfter(v === '' ? null : Number(v));
+                  }}
+                  className="mt-1.5 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-amber-50 focus:outline-none focus:border-amber-500/50">
+                  <option value="">{t.standalone}</option>
+                  {habits.filter(h => !h.archived).map(h => (
+                    <option key={h.id} value={String(h.id)}>{h.name}</option>
+                  ))}
+                </select>
+              </div>
             </>
           )}
 
@@ -3089,7 +4521,7 @@ function AddModal({ t, type, onSave, onClose }) {
 }
 
 // ============ SETTINGS MODAL ============
-function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestImport, onLoadSample, notifPermission, onRequestNotif }) {
+function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestImport, onLoadSample, notifPermission, onRequestNotif, tags, onAddTag, onRenameTag, onRequestDeleteTag }) {
   const fileRef = useRef(null);
 
   const set = (k, v) => setSettings(s => ({ ...s, [k]: v }));
@@ -3247,6 +4679,17 @@ function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestI
             </div>
           </SettingsSection>
 
+          {/* TAGS / т.2.10 */}
+          {Array.isArray(tags) && (
+            <SettingsSection icon="palette" title={t.tags}>
+              {t.tagsDesc && <p className="text-xs text-amber-200/60 leading-relaxed -mt-1">{t.tagsDesc}</p>}
+              <TagsManager
+                t={t} tags={tags}
+                onAdd={onAddTag} onRename={onRenameTag} onRequestDelete={onRequestDeleteTag}
+              />
+            </SettingsSection>
+          )}
+
           {/* NOTIFICATIONS */}
           {notifPermission !== 'granted' && (
             <button onClick={onRequestNotif}
@@ -3263,16 +4706,22 @@ function SettingsModal({ t, settings, setSettings, onClose, onExport, onRequestI
           <SettingsSection icon="download" title={t.data}>
             <button onClick={onExport}
               className="w-full flex items-center gap-3 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] text-left transition-all">
-              <Icon name="download" className="w-5 h-5 text-amber-400" />
-              <span className="font-bold text-amber-100">{t.exportData}</span>
+              <Icon name="download" className="w-5 h-5 text-amber-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-amber-100">{t.exportData}</p>
+                {t.backupDesc && <p className="text-xs text-amber-200/50">{t.backupDesc}</p>}
+              </div>
             </button>
 
             <button onClick={() => fileRef.current?.click()}
               className="w-full flex items-center gap-3 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] text-left transition-all">
-              <Icon name="upload" className="w-5 h-5 text-amber-400" />
-              <span className="font-bold text-amber-100">{t.importData}</span>
+              <Icon name="upload" className="w-5 h-5 text-amber-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-amber-100">{t.importData}</p>
+                {t.restoreDesc && <p className="text-xs text-amber-200/50">{t.restoreDesc}</p>}
+              </div>
             </button>
-            <input ref={fileRef} type="file" accept="application/json" className="hidden"
+            <input ref={fileRef} type="file" accept="application/json,.json" className="hidden"
               onChange={(e) => { if (e.target.files[0]) { onRequestImport(e.target.files[0]); e.target.value = ''; }}} />
 
             {onLoadSample && (
@@ -3320,6 +4769,281 @@ function ToggleRow({ icon, label, desc, value, onChange }) {
         className={`w-11 h-6 rounded-full relative transition-all flex-shrink-0 ${value ? 'bg-amber-500' : 'bg-white/10'}`}>
         <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${value ? 'left-5' : 'left-0.5'}`} />
       </button>
+    </div>
+  );
+}
+
+// ============ TAG CHIP SELECTOR (т.2.10 sub-3) ============
+// Reusable multi-select chip row used in:
+//   - AddModal (under the legacy Категория field) — for new habit/goal/task
+//   - HabitsView / GoalsView / TasksView expanded edit panels — to retag items inline
+// The component is purely presentational: it gets the global tag list and the
+// currently-selected ids, and emits the next array via `onChange`. Tags are
+// optional — passing an empty `selected` array is a valid state.
+// Empty state (no tags defined yet): shows a subtle CTA button that calls
+// `onOpenSettings`, which opens SettingsModal where the user can create the
+// first tag in TagsManager. SettingsModal renders on top of the current modal
+// (or expanded panel), so when the user closes it they return to this exact
+// row, now populated with the freshly-created tag(s).
+function TagChipSelector({ t, tags, selected, onChange, onOpenSettings }) {
+  const list = Array.isArray(tags) ? tags : [];
+  const selectedSet = new Set(selected || []);
+
+  if (list.length === 0) {
+    return (
+      <button
+        type="button"
+        onClick={onOpenSettings}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs font-bold hover:bg-amber-500/20 active:scale-95 transition-all">
+        <Icon name="plus" className="w-3 h-3" />
+        {t.addFirstTag}
+      </button>
+    );
+  }
+
+  const toggle = (id) => {
+    if (selectedSet.has(id)) {
+      onChange((selected || []).filter(x => x !== id));
+    } else {
+      onChange([...(selected || []), id]);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {list.map(tag => {
+        const on = selectedSet.has(tag.id);
+        return (
+          <button
+            key={tag.id}
+            type="button"
+            onClick={() => toggle(tag.id)}
+            aria-pressed={on}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all active:scale-95 max-w-[140px] truncate ${on ? 'border-white/50' : 'border-white/10 hover:border-white/25'}`}
+            style={on
+              ? { background: tag.color, color: '#0a0604', boxShadow: `0 0 10px ${tag.color}66` }
+              : { background: `${tag.color}1f`, color: tag.color }}
+            title={tag.name}>
+            {tag.name}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============ TAG FILTER BAR (т.2.10 sub-4) ============
+// Multi-select pill row that lives above HabitsView / GoalsView / TasksView
+// lists. Click on a tag toggles it on/off in the filter set; OR semantics
+// across the selected tags (an item matches if it has ≥1 of the selected
+// tagIds). When ≥1 filter is active, a small "×" pill appears at the end
+// to clear all filters in one tap.
+//
+// Empty state: if no tags are defined globally, the component renders null
+// — the row simply doesn't appear, so users who never created tags don't
+// see dead chrome above their list.
+//
+// Visual language: identical to TagChipSelector pills (selected = solid
+// color + dark text; deselected = faint colored bg + colored text). The
+// "filter" semantics are conveyed by position (page-level, above the list)
+// rather than by a different pill style — keeps the visual vocabulary
+// tight.
+function TagFilterBar({ t, tags, selected, onChange }) {
+  const list = Array.isArray(tags) ? tags : [];
+  if (list.length === 0) return null;
+
+  const selectedSet = new Set(selected || []);
+  const hasActive = (selected || []).length > 0;
+
+  const toggle = (id) => {
+    if (selectedSet.has(id)) {
+      onChange((selected || []).filter(x => x !== id));
+    } else {
+      onChange([...(selected || []), id]);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 mb-3 px-1">
+      {list.map(tag => {
+        const on = selectedSet.has(tag.id);
+        return (
+          <button
+            key={tag.id}
+            type="button"
+            onClick={() => toggle(tag.id)}
+            aria-pressed={on}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all active:scale-95 max-w-[140px] truncate ${on ? 'border-white/50' : 'border-white/10 hover:border-white/25'}`}
+            style={on
+              ? { background: tag.color, color: '#0a0604', boxShadow: `0 0 10px ${tag.color}66` }
+              : { background: `${tag.color}1f`, color: tag.color }}
+            title={tag.name}>
+            {tag.name}
+          </button>
+        );
+      })}
+      {hasActive && (
+        <button
+          type="button"
+          onClick={() => onChange([])}
+          aria-label={t.tagFilterClear}
+          title={t.tagFilterClear}
+          className="px-2 py-1 rounded-full border border-white/10 bg-white/[0.03] text-amber-200/60 hover:bg-white/[0.06] hover:text-amber-300 active:scale-95 transition-all flex items-center">
+          <Icon name="x" className="w-3 h-3" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ============ TAGS MANAGER (т.2.10) ============
+// CRUD UI for the global tag list. Lives inside SettingsModal under the
+// "Категории" section. The chip-selector that uses these tags inside the
+// add/edit modals is т.2.10 sub-3 and is intentionally NOT wired here yet
+// — that's the next chat. Sub-1 (state + migration) and sub-2 (CRUD screen)
+// are what this component delivers.
+function TagsManager({ t, tags, onAdd, onRename, onRequestDelete }) {
+  const [name, setName] = useState('');
+  const [color, setColor] = useState(TAG_COLORS[0]);
+  const [editingId, setEditingId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editColor, setEditColor] = useState(TAG_COLORS[0]);
+
+  const startEdit = (tag) => {
+    setEditingId(tag.id);
+    setEditName(tag.name);
+    setEditColor(tag.color);
+  };
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName('');
+  };
+  const saveEdit = () => {
+    if (!editName.trim()) return;
+    onRename(editingId, editName.trim(), editColor);
+    setEditingId(null);
+    setEditName('');
+  };
+  const handleAdd = () => {
+    if (!name.trim()) return;
+    onAdd(name.trim(), color);
+    setName('');
+    setColor(TAG_COLORS[0]);
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Add row */}
+      <div className="space-y-2 p-3 rounded-xl border border-white/5 bg-white/[0.03]">
+        <input
+          type="text"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAdd(); } }}
+          placeholder={t.tagName}
+          maxLength={32}
+          className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-amber-50 text-sm focus:outline-none focus:border-amber-500/50"
+        />
+        <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={t.tagColor}>
+          {TAG_COLORS.map(c => (
+            <button
+              key={c}
+              type="button"
+              role="radio"
+              aria-checked={color === c}
+              onClick={() => setColor(c)}
+              className={`w-6 h-6 rounded-full border-2 transition-all active:scale-90 ${color === c ? 'border-white scale-110' : 'border-white/20 hover:border-white/40'}`}
+              style={{ background: c }}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={handleAdd}
+          disabled={!name.trim()}
+          className="w-full py-2 rounded-lg font-bold text-black text-sm disabled:opacity-40 active:scale-95 transition-all"
+          style={{ background: 'linear-gradient(135deg, var(--theme-primary, #f59e0b), var(--theme-primary-dark, #ea580c))' }}>
+          {t.addTag}
+        </button>
+      </div>
+
+      {/* Existing tags list */}
+      {tags.length === 0 ? (
+        <p className="text-xs text-amber-200/50 italic text-center py-2">{t.noTagsYet}</p>
+      ) : (
+        <div className="space-y-1.5">
+          {tags.map(tag => editingId === tag.id ? (
+            <div key={tag.id} className="space-y-2 p-2.5 rounded-xl bg-white/[0.05] border border-amber-500/30">
+              <input
+                autoFocus
+                type="text"
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') { e.preventDefault(); saveEdit(); }
+                  if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
+                }}
+                maxLength={32}
+                className="w-full px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-amber-50 text-sm focus:outline-none focus:border-amber-500/50"
+              />
+              <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={t.tagColor}>
+                {TAG_COLORS.map(c => (
+                  <button
+                    key={c}
+                    type="button"
+                    role="radio"
+                    aria-checked={editColor === c}
+                    onClick={() => setEditColor(c)}
+                    className={`w-5 h-5 rounded-full border-2 transition-all active:scale-90 ${editColor === c ? 'border-white scale-110' : 'border-white/20 hover:border-white/40'}`}
+                    style={{ background: c }}
+                  />
+                ))}
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="flex-1 py-1.5 rounded-lg bg-white/5 border border-white/10 text-amber-100/70 text-xs font-bold">
+                  {t.cancel}
+                </button>
+                <button
+                  type="button"
+                  onClick={saveEdit}
+                  disabled={!editName.trim()}
+                  className="flex-1 py-1.5 rounded-lg font-bold text-black text-xs disabled:opacity-40"
+                  style={{ background: 'linear-gradient(135deg, var(--theme-primary, #f59e0b), var(--theme-primary-dark, #ea580c))' }}>
+                  {t.save}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div key={tag.id} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.02] border border-white/5">
+              <span
+                className="w-3.5 h-3.5 rounded-full flex-shrink-0"
+                style={{ background: tag.color, boxShadow: `0 0 6px ${tag.color}88` }}
+                aria-hidden="true"
+              />
+              <span className="flex-1 text-sm text-amber-100 truncate font-medium">{tag.name}</span>
+              <button
+                type="button"
+                onClick={() => startEdit(tag)}
+                aria-label={t.editTag}
+                title={t.editTag}
+                className="p-1.5 rounded-lg hover:bg-white/5 text-amber-200/60 active:scale-90 transition-all">
+                <Icon name="edit" className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onRequestDelete(tag.id)}
+                aria-label={t.deleteTag}
+                title={t.deleteTag}
+                className="p-1.5 rounded-lg hover:bg-rose-500/10 text-rose-300/70 hover:text-rose-300 active:scale-90 transition-all">
+                <Icon name="trash" className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
